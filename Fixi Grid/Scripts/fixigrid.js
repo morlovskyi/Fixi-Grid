@@ -78,3 +78,4 @@ var fixiController = (function () {
     };
     return fixiController;
 })();
+//# sourceMappingURL=fixigrid.js.map

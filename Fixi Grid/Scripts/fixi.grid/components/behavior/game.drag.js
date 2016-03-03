@@ -48,3 +48,4 @@ var fixiGridComponents;
         behaviors.gameDragBehavior = gameDragBehavior;
     })(behaviors = fixiGridComponents.behaviors || (fixiGridComponents.behaviors = {}));
 })(fixiGridComponents || (fixiGridComponents = {}));
+//# sourceMappingURL=game.drag.js.map

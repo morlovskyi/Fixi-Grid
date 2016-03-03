@@ -1,1 +1,0 @@
-"C:\Fixi\Fixi Grid\Fixi Grid\scripts\fixi.grid\fixiGrid.ts" "C:\Fixi\Fixi Grid\Fixi Grid\scripts\fixi.grid\models\court.ts" "C:\Fixi\Fixi Grid\Fixi Grid\scripts\fixi.grid\templates\grid.html.ts" --sourcemap --removeComments --target ES5 --out scripts/build/fixi.grid.js

@@ -147,3 +147,4 @@ var fixiGridComponents;
     })();
     fixiGridComponents.fixiGridHeader = fixiGridHeader;
 })(fixiGridComponents || (fixiGridComponents = {}));
+//# sourceMappingURL=header.js.map

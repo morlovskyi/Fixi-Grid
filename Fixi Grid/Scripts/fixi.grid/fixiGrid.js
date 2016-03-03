@@ -67,3 +67,4 @@ var fixiGrid = (function () {
     };
     return fixiGrid;
 })();
+//# sourceMappingURL=fixiGrid.js.map
