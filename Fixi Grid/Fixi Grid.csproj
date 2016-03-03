@@ -147,13 +147,13 @@
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.min.js" />
     <Content Include="Scripts\build\fixi.grid.js" />
-    <None Include=".bin\git.cmd" />
-    <None Include=".bin\grunt.cmd" />
-    <None Include=".bin\node.cmd" />
-    <None Include=".bin\npm.cmd" />
     <Content Include="Scripts\build\fixi.grid.js.map" />
     <Content Include="Scripts\angular-moment.min.js.map" />
     <Content Include="Scripts\d3\d3.tip.js" />
+    <Content Include=".bin\git.cmd" />
+    <Content Include=".bin\grunt.cmd" />
+    <Content Include=".bin\node.cmd" />
+    <Content Include=".bin\npm.cmd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
