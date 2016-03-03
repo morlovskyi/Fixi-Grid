@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fixi Grid", "Fixi Grid\Fixi Grid.csproj", "{AE538494-8D3A-4757-8CF7-5BB6FB991319}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EC0D5F1B-852D-4724-ABE6-09A94B7DF37C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8B923623-6731-4943-9FEC-55DEF5262D19}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AE538494-8D3A-4757-8CF7-5BB6FB991319}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE538494-8D3A-4757-8CF7-5BB6FB991319}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE538494-8D3A-4757-8CF7-5BB6FB991319}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE538494-8D3A-4757-8CF7-5BB6FB991319}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

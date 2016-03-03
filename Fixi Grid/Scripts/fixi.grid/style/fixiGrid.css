@@ -1,0 +1,38 @@
+﻿
+.fixiGridContent .game { cursor: pointer; font-size: 10px; }
+    .fixiGridContent .game rect.game-aria { fill: #2196F3; stroke: #BFBCBC; opacity: 0.75; }
+    /*.fixiGridContent .game rect.f-hover { outline: 1px solid #338EFF; outline-offset: 1px; }*/
+    .fixiGridContent .game text.title { text-anchor: middle; }
+    .fixiGridContent .game text:not([data-role="button"]) { pointer-events: none; }
+    .fixiGridContent .game text { fill: white; text-shadow: 0 0 1px black; }
+
+.fixiGridContent .timeLine path { opacity: 0.1; }
+.fixiGridContent .axis-x path,
+.fixiGridContent .axis-y path { display: none; }
+
+.fixiGridContent * { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+
+.fixiGridContent .timeLine line,
+.fixiGridContent .axis-y .tick:nth-child(4n+1) line { stroke: rgba(152, 152, 152, 0.62); }
+
+.fixiGridContent .timeLine .tick:first-child line,
+.fixiGridContent .axis-y .tick:first-child { display: none; }
+
+.fixiGridContent .timeLine .tick text,
+.court-title { text-anchor: middle; fill: #565656; font: 700 12px Arial, Helvetica, sans-serif; }
+
+rect.game-aria-resize-top,
+rect.game-aria-resize-down { fill: transparent; }
+
+.game:not(.dragged):not(.shadow) rect.game-aria-resize-top,
+.game:not(.dragged):not(.shadow) rect.game-aria-resize-down { cursor: n-resize; }
+
+.game [data-role="button"] { display: none; font-size: 15px; }
+.game:not(.dragged):not(.shadow):hover line.game-aria-resize-top,
+.game:not(.dragged):not(.shadow):hover [data-role="button"],
+.game:not(.dragged):not(.shadow):hover line.game-aria-resize-down { display: block; }
+
+.game:hover rect.game-aria { opacity: 0.9; }
+
+.game.dragged { display: none; }
+.game.shadow { cursor: -webkit-grabbing; }

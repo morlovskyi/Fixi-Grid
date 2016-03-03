@@ -1,0 +1,18 @@
+﻿<style>
+    #fixiGridElement { position: absolute; top: 10px; bottom: 10px; left: 10px; right: 10px; border: 1px solid #D2D2D2; }
+</style>
+<div ng-app="myApp">
+    <div ng-controller="fixiController">
+        @*<div style="text-align:center;  background-color: #D3E0EA;">
+                <h1>{{title}}</h1>
+                <md-button class="md-icon-button" ng-click="date.add(-1,'day')"><</md-button>
+                <md-button class="md-icon-button" ng-click="date.add(-7,'day')">-7</md-button>
+                {{date|amDateFormat:'dddd, DD MMMM YYYY'}}
+                <md-button class="md-icon-button" ng-click="date.add(7,'day')">+7</md-button>
+                <md-button class="md-icon-button" ng-click="date.add(1,'day')">></md-button>
+            </div>*@
+        <div id="fixiGridElement"></div>
+    </div>
+</div>
+<script src="~/Scripts/fixigrid.js"></script>
+
