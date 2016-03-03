@@ -24,4 +24,3 @@ var fixiGridUtils;
     }
     fixiGridUtils.toTimeString = toTimeString;
 })(fixiGridUtils || (fixiGridUtils = {}));
-//# sourceMappingURL=utils.js.map

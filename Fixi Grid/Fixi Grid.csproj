@@ -160,7 +160,9 @@
     </None>
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\build\fixi.grid.min.js" />
+    <Content Include="Scripts\fixi.grid\style\fixiGrid.print.css" />
     <Content Include="Scripts\fixi.grid\style\fixiGrid.css" />
+    <Content Include="Scripts\fixi.grid\templates\print.html" />
     <Content Include="Scripts\fixi.grid\templates\grid.html" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
@@ -189,6 +191,9 @@
     <Content Include="Scripts\jquery-2.1.4.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\base.ts" />
+    <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\game.resize.down.ts" />
+    <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\game.resize.top.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\game.drag.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\content.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\d3elements\game.ts" />
@@ -200,6 +205,7 @@
     <TypeScriptCompile Include="Scripts\fixi.grid\models\count.constructor.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\models\court.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\templates\grid.html.ts" />
+    <TypeScriptCompile Include="Scripts\fixi.grid\templates\print.html.ts" />
     <TypeScriptCompile Include="Scripts\fixigrid.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />

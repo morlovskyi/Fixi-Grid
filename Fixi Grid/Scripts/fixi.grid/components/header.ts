@@ -54,7 +54,8 @@ namespace fixiGridComponents {
             var countSection = court.enter().append("g")
                 .classed("court", true)
                 .attr({
-                    "data-id": (d) => { return d.CourtId }
+                    "data-id": (d) => { return d.CourtId },
+                    "data-colspan": (d) => { return d.ColSpan }
                 })
 
             countSection.append("text")
@@ -124,26 +125,12 @@ namespace fixiGridComponents {
                     y2: 0
                 })
         }
-        public courtPosition(courtId: number) {
-            for (var i = 0, length = this.courts.length; i < length; i++) {
-                var type = this.courts[i];
-                for (var j = 0, jlength = type.length; j < jlength; j++) {
-                    var court = type[j];
-                    if (court.CourtId == courtId) {
-                        return this.scale(court.ColSpan) * j
-                    }
-                }
-            }
-        }
-        public courtSize(courtId: number) {
-            for (var i = 0, length = this.courts.length; i < length; i++) {
-                var type = this.courts[i];
-                for (var j = 0, jlength = type.length; j < jlength; j++) {
-                    var court = type[j];
-                    if (court.CourtId == courtId)
-                        return this.scale(court.ColSpan)
-                }
-            }
+        public convertUnitCellToCourt(game: fixiCourtGame, unitCell: number): fixiCourtDB {
+            var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
+            var requiredColSpanCourts = this.countHeader.selectAll("[data-colspan='" + currentGameCourt.ColSpan + "']").data();
+            var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
+
+            return requiredColSpanCourts[requiredIndex];
         }
     }
 }

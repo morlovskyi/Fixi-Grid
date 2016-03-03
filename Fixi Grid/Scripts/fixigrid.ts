@@ -45,11 +45,11 @@ class fixiController {
                 onOpen: (game) => {
                     alert("Edit: " + game.user)
                 },
-                onChange: (game,courtId, from, to) => {
+                onChange: (game, court, from, to) => {
                     game.to = to;
-                    game.courtId = courtId;
+                    game.courtId = court.CourtId;
                     game.from = from;
-                    this.fetch();   
+                    this.fetch();
                 }
             }
         })

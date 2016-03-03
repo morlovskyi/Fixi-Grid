@@ -142,4 +142,3 @@ var fixiGridComponents;
         elements.game = game;
     })(elements = fixiGridComponents.elements || (fixiGridComponents.elements = {}));
 })(fixiGridComponents || (fixiGridComponents = {}));
-//# sourceMappingURL=game.js.map

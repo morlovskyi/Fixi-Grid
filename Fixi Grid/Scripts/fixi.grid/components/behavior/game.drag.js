@@ -1,51 +1,38 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/// <reference path="base.ts" />
 var fixiGridComponents;
 (function (fixiGridComponents) {
     var behaviors;
     (function (behaviors) {
-        var gameDragBehavior = (function () {
-            function gameDragBehavior(axisX, scaleY, courtDict) {
-                this.animatinoDuration = 150;
-                this.axisX = axisX;
-                this.scaleY = scaleY;
-                this.courtDict = courtDict;
-                this.behavior = d3.behavior.drag()
-                    .on("dragstart", this.dragStart.bind(this))
-                    .on("drag", this.drag.bind(this))
-                    .on("dragend", this.dragEnd.bind(this));
+        var gameDragBehavior = (function (_super) {
+            __extends(gameDragBehavior, _super);
+            function gameDragBehavior() {
+                _super.apply(this, arguments);
+                this.targetClass = "dragged";
+                this.shadowClass = "shadow";
             }
-            gameDragBehavior.prototype.dragStart = function () {
-                var gElement = $(event.srcElement).parent().get(0);
-                var clone = $(gElement).clone();
-                this.target = d3.select(gElement).classed("dragged", true);
-                this.shadow = d3.select(clone.get(0)).classed("shadow", true);
-                this.rect = d3.transform(this.shadow.attr("transform")).translate;
-                clone.appendTo($(gElement).parent());
-            };
             gameDragBehavior.prototype.drag = function (d) {
-                //TODO: Fix issue on IE
-                var event = d3.event;
+                var tempX = event.pageX - this.dragStartPageX;
                 var courtSize = this.courtDict()[d.courtId].size;
-                var x = this.rect[0] + event.x;
+                var x = this.rect[0] + tempX + courtSize / 2;
                 var left = x - x % courtSize;
-                var y = this.scaleY.invert(this.rect[1] + event.y);
+                var tempY = event.pageY - this.dragStartPageY;
+                var y = this.scaleY.invert(this.rect[1] + tempY);
                 var axisRowValue = this.axisX.ticks()[1];
                 y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
                 var top = this.scaleY(y);
+                if (left < 0 || top < 0)
+                    return;
                 this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
                     transform: "translate(" + left + "," + top + ")"
                 });
             };
-            gameDragBehavior.prototype.dragEnd = function (d) {
-                var _this = this;
-                setTimeout(function () {
-                    _this.target.classed("dragged", false);
-                    _this.shadow.remove();
-                    $(_this).trigger("change", [d3.transform(_this.shadow.attr("transform")).translate, _this.target, d]);
-                }, this.animatinoDuration);
-            };
             return gameDragBehavior;
-        })();
+        })(behaviors.baseDragBehavior);
         behaviors.gameDragBehavior = gameDragBehavior;
     })(behaviors = fixiGridComponents.behaviors || (fixiGridComponents.behaviors = {}));
 })(fixiGridComponents || (fixiGridComponents = {}));
-//# sourceMappingURL=game.drag.js.map

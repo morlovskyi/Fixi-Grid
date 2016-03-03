@@ -23,7 +23,8 @@ var fixiGridComponents;
                 var countSection = court.enter().append("g")
                     .classed("court", true)
                     .attr({
-                    "data-id": function (d) { return d.CourtId; }
+                    "data-id": function (d) { return d.CourtId; },
+                    "data-colspan": function (d) { return d.ColSpan; }
                 });
                 countSection.append("text")
                     .classed("court-title", true)
@@ -122,29 +123,13 @@ var fixiGridComponents;
                 y2: 0
             });
         };
-        fixiGridHeader.prototype.courtPosition = function (courtId) {
-            for (var i = 0, length = this.courts.length; i < length; i++) {
-                var type = this.courts[i];
-                for (var j = 0, jlength = type.length; j < jlength; j++) {
-                    var court = type[j];
-                    if (court.CourtId == courtId) {
-                        return this.scale(court.ColSpan) * j;
-                    }
-                }
-            }
-        };
-        fixiGridHeader.prototype.courtSize = function (courtId) {
-            for (var i = 0, length = this.courts.length; i < length; i++) {
-                var type = this.courts[i];
-                for (var j = 0, jlength = type.length; j < jlength; j++) {
-                    var court = type[j];
-                    if (court.CourtId == courtId)
-                        return this.scale(court.ColSpan);
-                }
-            }
+        fixiGridHeader.prototype.convertUnitCellToCourt = function (game, unitCell) {
+            var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
+            var requiredColSpanCourts = this.countHeader.selectAll("[data-colspan='" + currentGameCourt.ColSpan + "']").data();
+            var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
+            return requiredColSpanCourts[requiredIndex];
         };
         return fixiGridHeader;
     })();
     fixiGridComponents.fixiGridHeader = fixiGridHeader;
 })(fixiGridComponents || (fixiGridComponents = {}));
-//# sourceMappingURL=header.js.map

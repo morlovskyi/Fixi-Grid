@@ -26,12 +26,13 @@ var fixiGridComponents;
                 .ticks(d3.time.minute, 15)
                 .tickFormat("");
             this.gameDragBehavior = new fixiGridComponents.behaviors.gameDragBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
-            $(this.gameDragBehavior).on("change", function (e, xy, target, data) {
-                //TODO: Fix issue with courts
-                var courtId = _this.scale.x.invert(xy[0]) + 1;
-                var from = _this.scale.y.invert(xy[1]);
-                var to = _this.scale.y.invert(xy[1] + parseInt(target.selectAll(".game-aria").attr("height")));
-                $(_this).trigger("ongamechange", [data, courtId, from, to]);
+            this.gameResizeTopBehavior = new fixiGridComponents.behaviors.gameResizeTopBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
+            this.gameResizeDownBehavior = new fixiGridComponents.behaviors.gameResizeDownBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
+            $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", function (e, xy, target, data) {
+                var unitCell = _this.scale.x.invert(xy.left);
+                var from = _this.scale.y.invert(xy.top);
+                var to = _this.scale.y.invert(xy.top + xy.height);
+                $(_this).trigger("ongamechange", [data, unitCell, from, to]);
             });
             this.gridRender();
         }
@@ -61,6 +62,10 @@ var fixiGridComponents;
                 });
                 d3Games.selectAll(".game-aria")
                     .call(this.gameDragBehavior.behavior);
+                d3Games.selectAll(".game-aria-resize-top")
+                    .call(this.gameResizeTopBehavior.behavior);
+                d3Games.selectAll(".game-aria-resize-down")
+                    .call(this.gameResizeDownBehavior.behavior);
                 this.reposition();
             },
             enumerable: true,
@@ -100,4 +105,3 @@ var fixiGridComponents;
     })();
     fixiGridComponents.content = content;
 })(fixiGridComponents || (fixiGridComponents = {}));
-//# sourceMappingURL=content.js.map

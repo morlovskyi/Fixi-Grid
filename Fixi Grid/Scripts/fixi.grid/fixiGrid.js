@@ -4,6 +4,7 @@
 /// <reference path="components/header.ts" />
 /// <reference path="components/content.ts" />
 /// <reference path="templates/grid.html.ts" />
+/// <reference path="templates/print.html.ts" />
 var fixiGrid = (function () {
     function fixiGrid(options) {
         var _this = this;
@@ -21,6 +22,20 @@ var fixiGrid = (function () {
             $(window).off("resize.fixiGrid");
             _this.container.off("*");
             _this.container.empty();
+        };
+        this.print = function () {
+            setTimeout(function () {
+                var printerFrame = document.createElement('iframe'); // $("<iframe>")[0];
+                var printView = $("<html>");
+                printView.html(fixiGridTemplates.print);
+                printView.find("#fixiGrid").append(_this.container.clone());
+                $(window.document.body).append(printerFrame);
+                printerFrame.contentWindow.document.writeln(printView.html());
+                setTimeout(function () {
+                    printerFrame.contentDocument.execCommand('print', false, null);
+                    printerFrame.parentNode.removeChild(printerFrame);
+                }, 250);
+            }, 200);
         };
         this.container = $("#" + options.id);
         this.element = this.container.append(fixiGridTemplates.grid);
@@ -43,9 +58,10 @@ var fixiGrid = (function () {
             if (type == "edit" && options.event && options.event.onOpen)
                 options.event.onOpen(data, e);
         });
-        $(this.components.content).on("ongamechange", function (e, data, courtId, from, to) {
+        $(this.components.content).on("ongamechange", function (e, data, unitCell, from, to) {
+            var court = _this.components.header.convertUnitCellToCourt(data, unitCell);
             if (options.event && options.event.onChange)
-                options.event.onChange(data, courtId, from, to);
+                options.event.onChange(data, court, from, to);
         });
         $(window).on("resize.fixiGrid", function () { _this.refreshSize(); });
     }
@@ -67,4 +83,3 @@ var fixiGrid = (function () {
     };
     return fixiGrid;
 })();
-//# sourceMappingURL=fixiGrid.js.map

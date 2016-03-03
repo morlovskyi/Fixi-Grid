@@ -17,6 +17,9 @@ namespace fixiGridComponents {
             this.gridReposition();
         }
         public gameDragBehavior: behaviors.gameDragBehavior;
+        public gameResizeTopBehavior: behaviors.gameResizeTopBehavior;
+        public gameResizeDownBehavior: behaviors.gameResizeDownBehavior;
+        
         private _games: fixiCourtGame[] = [];
         get games() { return this._games; }
         set games(games: fixiCourtGame[]) {
@@ -30,7 +33,10 @@ namespace fixiGridComponents {
 
             d3Games.selectAll(".game-aria")
                 .call(this.gameDragBehavior.behavior);
-
+            d3Games.selectAll(".game-aria-resize-top")
+                .call(this.gameResizeTopBehavior.behavior);
+            d3Games.selectAll(".game-aria-resize-down")
+                .call(this.gameResizeDownBehavior.behavior);
             this.reposition();
         }
 
@@ -54,12 +60,15 @@ namespace fixiGridComponents {
                 .tickFormat("")
 
             this.gameDragBehavior = new behaviors.gameDragBehavior(this.axis.y, this.scale.y, () => this.courtDict);
-            $(this.gameDragBehavior).on("change", (e: Event, xy: [number, number], target: d3.Selection<fixiCourtGame>, data: fixiCourtGame) => {
-                //TODO: Fix issue with courts
-                var courtId = this.scale.x.invert(xy[0]) + 1;
-                var from = this.scale.y.invert(xy[1]);
-                var to = this.scale.y.invert(xy[1] + parseInt(target.selectAll(".game-aria").attr("height")));
-                $(this).trigger("ongamechange", [data, courtId, from, to])
+            this.gameResizeTopBehavior = new behaviors.gameResizeTopBehavior(this.axis.y, this.scale.y, () => this.courtDict);
+            this.gameResizeDownBehavior = new behaviors.gameResizeDownBehavior(this.axis.y, this.scale.y, () => this.courtDict);
+
+            $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", (e: Event, xy: { top: number, left: number, width: number, height: number }, target: d3.Selection<fixiCourtGame>, data: fixiCourtGame) => {
+                var unitCell = this.scale.x.invert(xy.left);
+                var from = this.scale.y.invert(xy.top);
+                var to = this.scale.y.invert(xy.top + xy.height);
+
+                $(this).trigger("ongamechange", [data, unitCell, from, to])
             })
 
             this.gridRender();

@@ -43,9 +43,9 @@ var fixiController = (function () {
                 onOpen: function (game) {
                     alert("Edit: " + game.user);
                 },
-                onChange: function (game, courtId, from, to) {
+                onChange: function (game, court, from, to) {
                     game.to = to;
-                    game.courtId = courtId;
+                    game.courtId = court.CourtId;
                     game.from = from;
                     _this.fetch();
                 }
@@ -78,4 +78,3 @@ var fixiController = (function () {
     };
     return fixiController;
 })();
-//# sourceMappingURL=fixigrid.js.map

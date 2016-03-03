@@ -13,7 +13,7 @@ interface fixiGridOptions {
     event?: {
         onRemove?: (data: fixiCourtGame, event: any) => void
         onOpen?: (data: fixiCourtGame, event: any) => void
-        onChange?: (data: fixiCourtGame, courtId: number,from: Date, to: Date) => void
+        onChange?: (data: fixiCourtGame, court: fixiCourtDB,from: Date, to: Date) => void
     }
 }
 interface fixiGridCourt {

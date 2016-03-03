@@ -4,6 +4,7 @@
 /// <reference path="components/header.ts" />
 /// <reference path="components/content.ts" />
 /// <reference path="templates/grid.html.ts" />
+/// <reference path="templates/print.html.ts" />
 class fixiGrid {
 
     private container: JQuery;
@@ -49,11 +50,12 @@ class fixiGrid {
             if (type == "edit" && options.event && options.event.onOpen)
                 options.event.onOpen(data, e)
         })
-        $(this.components.content).on("ongamechange", (e: Event, data: fixiCourtGame, courtId: number, from: Date, to: Date) => {
-            if (options.event && options.event.onChange)
-                options.event.onChange(data, courtId, from, to)
-        })
+        $(this.components.content).on("ongamechange", (e: Event, data: fixiCourtGame, unitCell: number, from: Date, to: Date) => {
+            var court: fixiCourtDB = this.components.header.convertUnitCellToCourt(data, unitCell);
 
+            if (options.event && options.event.onChange)
+                options.event.onChange(data, court, from, to)
+        })
         $(window).on("resize.fixiGrid", () => { this.refreshSize() })
     }
     public destroy = () => {
@@ -79,5 +81,22 @@ class fixiGrid {
         this.components.content.reposition();
 
         this.d3svgcontent.attr({ height: this.components.timeLine.scale.range()[1] });
+    }
+
+    public print = () => {
+        setTimeout(() => {
+            var printerFrame = <HTMLIFrameElement>document.createElement('iframe');// $("<iframe>")[0];
+            var printView = $("<html>");
+            printView.html(fixiGridTemplates.print);
+            printView.find("#fixiGrid").append(this.container.clone())
+
+            $(window.document.body).append(printerFrame);
+            printerFrame.contentWindow.document.writeln(printView.html())
+
+            setTimeout(() => {
+                printerFrame.contentDocument.execCommand('print', false, null)
+                printerFrame.parentNode.removeChild(printerFrame);
+            }, 250)
+        }, 200)
     }
 }

@@ -56,4 +56,3 @@ var fixiGridComponents;
     })();
     fixiGridComponents.timeLine = timeLine;
 })(fixiGridComponents || (fixiGridComponents = {}));
-//# sourceMappingURL=timeline.js.map

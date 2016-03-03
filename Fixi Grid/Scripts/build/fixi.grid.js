@@ -2,9 +2,11 @@ var fixiGridComponents;
 (function (fixiGridComponents) {
     var behaviors;
     (function (behaviors) {
-        var gameDragBehavior = (function () {
-            function gameDragBehavior(axisX, scaleY, courtDict) {
+        var baseDragBehavior = (function () {
+            function baseDragBehavior(axisX, scaleY, courtDict) {
                 this.animatinoDuration = 150;
+                this.targetClass = "";
+                this.shadowClass = "";
                 this.axisX = axisX;
                 this.scaleY = scaleY;
                 this.courtDict = courtDict;
@@ -13,38 +15,135 @@ var fixiGridComponents;
                     .on("drag", this.drag.bind(this))
                     .on("dragend", this.dragEnd.bind(this));
             }
-            gameDragBehavior.prototype.dragStart = function () {
+            baseDragBehavior.prototype.dragStart = function () {
                 var gElement = $(event.srcElement).parent().get(0);
                 var clone = $(gElement).clone();
-                this.target = d3.select(gElement).classed("dragged", true);
-                this.shadow = d3.select(clone.get(0)).classed("shadow", true);
+                this.target = d3.select(gElement).classed(this.targetClass, true);
+                this.shadow = d3.select(clone.get(0)).classed(this.shadowClass, true);
+                this.gameAria = this.shadow.select(".game-aria");
+                this.gameAriaHeightOriginal = parseInt(this.gameAria.attr("height"));
                 this.rect = d3.transform(this.shadow.attr("transform")).translate;
+                this.dragStartPageX = event.pageX;
+                this.dragStartPageY = event.pageY;
                 clone.appendTo($(gElement).parent());
             };
+            baseDragBehavior.prototype.drag = function (d) {
+            };
+            baseDragBehavior.prototype.dragEnd = function (d) {
+                var _this = this;
+                setTimeout(function () {
+                    _this.target.classed(_this.targetClass, false);
+                    _this.shadow.remove();
+                    var translate = d3.transform(_this.shadow.attr("transform")).translate;
+                    var result = {
+                        left: translate[0],
+                        top: translate[1],
+                        width: parseFloat(_this.shadow.select("rect.game-aria").attr("width")),
+                        height: parseFloat(_this.shadow.select("rect.game-aria").attr("height"))
+                    };
+                    $(_this).trigger("change", [result, _this.target, d]);
+                }, this.animatinoDuration);
+            };
+            return baseDragBehavior;
+        })();
+        behaviors.baseDragBehavior = baseDragBehavior;
+    })(behaviors = fixiGridComponents.behaviors || (fixiGridComponents.behaviors = {}));
+})(fixiGridComponents || (fixiGridComponents = {}));
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/// <reference path="base.ts" />
+var fixiGridComponents;
+(function (fixiGridComponents) {
+    var behaviors;
+    (function (behaviors) {
+        var gameDragBehavior = (function (_super) {
+            __extends(gameDragBehavior, _super);
+            function gameDragBehavior() {
+                _super.apply(this, arguments);
+                this.targetClass = "dragged";
+                this.shadowClass = "shadow";
+            }
             gameDragBehavior.prototype.drag = function (d) {
-                var event = d3.event;
+                var tempX = event.pageX - this.dragStartPageX;
                 var courtSize = this.courtDict()[d.courtId].size;
-                var x = this.rect[0] + event.x;
+                var x = this.rect[0] + tempX + courtSize / 2;
                 var left = x - x % courtSize;
-                var y = this.scaleY.invert(this.rect[1] + event.y);
+                var tempY = event.pageY - this.dragStartPageY;
+                var y = this.scaleY.invert(this.rect[1] + tempY);
                 var axisRowValue = this.axisX.ticks()[1];
                 y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
                 var top = this.scaleY(y);
+                if (left < 0 || top < 0)
+                    return;
                 this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
                     transform: "translate(" + left + "," + top + ")"
                 });
             };
-            gameDragBehavior.prototype.dragEnd = function (d) {
-                var _this = this;
-                setTimeout(function () {
-                    _this.target.classed("dragged", false);
-                    _this.shadow.remove();
-                    $(_this).trigger("change", [d3.transform(_this.shadow.attr("transform")).translate, _this.target, d]);
-                }, this.animatinoDuration);
-            };
             return gameDragBehavior;
-        })();
+        })(behaviors.baseDragBehavior);
         behaviors.gameDragBehavior = gameDragBehavior;
+    })(behaviors = fixiGridComponents.behaviors || (fixiGridComponents.behaviors = {}));
+})(fixiGridComponents || (fixiGridComponents = {}));
+/// <reference path="base.ts" />
+var fixiGridComponents;
+(function (fixiGridComponents) {
+    var behaviors;
+    (function (behaviors) {
+        var gameResizeDownBehavior = (function (_super) {
+            __extends(gameResizeDownBehavior, _super);
+            function gameResizeDownBehavior() {
+                _super.apply(this, arguments);
+                this.shadowClass = "resize-shadow";
+            }
+            gameResizeDownBehavior.prototype.drag = function (d) {
+                var tempY = event.pageY - this.dragStartPageY;
+                var y = this.scaleY.invert(tempY);
+                var axisRowValue = this.axisX.ticks()[1];
+                y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
+                var top = this.scaleY(y);
+                if (this.gameAriaHeightOriginal + top < 0)
+                    return;
+                this.gameAria.attr({
+                    height: this.gameAriaHeightOriginal + top
+                });
+            };
+            return gameResizeDownBehavior;
+        })(behaviors.baseDragBehavior);
+        behaviors.gameResizeDownBehavior = gameResizeDownBehavior;
+    })(behaviors = fixiGridComponents.behaviors || (fixiGridComponents.behaviors = {}));
+})(fixiGridComponents || (fixiGridComponents = {}));
+/// <reference path="base.ts" />
+var fixiGridComponents;
+(function (fixiGridComponents) {
+    var behaviors;
+    (function (behaviors) {
+        var gameResizeTopBehavior = (function (_super) {
+            __extends(gameResizeTopBehavior, _super);
+            function gameResizeTopBehavior() {
+                _super.apply(this, arguments);
+                this.shadowClass = "resize-shadow";
+            }
+            gameResizeTopBehavior.prototype.drag = function (d) {
+                var tempY = event.pageY - this.dragStartPageY;
+                var y = this.scaleY.invert(this.rect[1] + tempY);
+                var axisRowValue = this.axisX.ticks()[1];
+                y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
+                var top = this.scaleY(y);
+                if (top < 0 && this.rect[1] - top > 0)
+                    return;
+                this.shadow.attr({
+                    transform: "translate(" + this.rect[0] + "," + top + ")"
+                });
+                this.gameAria.attr({
+                    height: this.gameAriaHeightOriginal + (this.rect[1] - top)
+                });
+            };
+            return gameResizeTopBehavior;
+        })(behaviors.baseDragBehavior);
+        behaviors.gameResizeTopBehavior = gameResizeTopBehavior;
     })(behaviors = fixiGridComponents.behaviors || (fixiGridComponents.behaviors = {}));
 })(fixiGridComponents || (fixiGridComponents = {}));
 var fixiGridComponents;
@@ -219,11 +318,13 @@ var fixiGridComponents;
                 .ticks(d3.time.minute, 15)
                 .tickFormat("");
             this.gameDragBehavior = new fixiGridComponents.behaviors.gameDragBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
-            $(this.gameDragBehavior).on("change", function (e, xy, target, data) {
-                var courtId = _this.scale.x.invert(xy[0]) + 1;
-                var from = _this.scale.y.invert(xy[1]);
-                var to = _this.scale.y.invert(xy[1] + parseInt(target.selectAll(".game-aria").attr("height")));
-                $(_this).trigger("ongamechange", [data, courtId, from, to]);
+            this.gameResizeTopBehavior = new fixiGridComponents.behaviors.gameResizeTopBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
+            this.gameResizeDownBehavior = new fixiGridComponents.behaviors.gameResizeDownBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
+            $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", function (e, xy, target, data) {
+                var unitCell = _this.scale.x.invert(xy.left);
+                var from = _this.scale.y.invert(xy.top);
+                var to = _this.scale.y.invert(xy.top + xy.height);
+                $(_this).trigger("ongamechange", [data, unitCell, from, to]);
             });
             this.gridRender();
         }
@@ -253,6 +354,10 @@ var fixiGridComponents;
                 });
                 d3Games.selectAll(".game-aria")
                     .call(this.gameDragBehavior.behavior);
+                d3Games.selectAll(".game-aria-resize-top")
+                    .call(this.gameResizeTopBehavior.behavior);
+                d3Games.selectAll(".game-aria-resize-down")
+                    .call(this.gameResizeDownBehavior.behavior);
                 this.reposition();
             },
             enumerable: true,
@@ -327,7 +432,8 @@ var fixiGridComponents;
                 var countSection = court.enter().append("g")
                     .classed("court", true)
                     .attr({
-                    "data-id": function (d) { return d.CourtId; }
+                    "data-id": function (d) { return d.CourtId; },
+                    "data-colspan": function (d) { return d.ColSpan; }
                 });
                 countSection.append("text")
                     .classed("court-title", true)
@@ -426,26 +532,11 @@ var fixiGridComponents;
                 y2: 0
             });
         };
-        fixiGridHeader.prototype.courtPosition = function (courtId) {
-            for (var i = 0, length = this.courts.length; i < length; i++) {
-                var type = this.courts[i];
-                for (var j = 0, jlength = type.length; j < jlength; j++) {
-                    var court = type[j];
-                    if (court.CourtId == courtId) {
-                        return this.scale(court.ColSpan) * j;
-                    }
-                }
-            }
-        };
-        fixiGridHeader.prototype.courtSize = function (courtId) {
-            for (var i = 0, length = this.courts.length; i < length; i++) {
-                var type = this.courts[i];
-                for (var j = 0, jlength = type.length; j < jlength; j++) {
-                    var court = type[j];
-                    if (court.CourtId == courtId)
-                        return this.scale(court.ColSpan);
-                }
-            }
+        fixiGridHeader.prototype.convertUnitCellToCourt = function (game, unitCell) {
+            var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
+            var requiredColSpanCourts = this.countHeader.selectAll("[data-colspan='" + currentGameCourt.ColSpan + "']").data();
+            var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
+            return requiredColSpanCourts[requiredIndex];
         };
         return fixiGridHeader;
     })();
@@ -511,7 +602,11 @@ var fixiGridComponents;
 })(fixiGridComponents || (fixiGridComponents = {}));
 var fixiGridTemplates;
 (function (fixiGridTemplates) {
-    fixiGridTemplates.grid = '<style>    g.tick line { stroke: #ddd; stroke-width: 1px; fill: aquamarine; }    .courtAxis g text { text-anchor: start !important; }</style><div>    <svg shape-rendering="crispEdges" class="fixiGridHeader" style="width:100%;height: 90px;background:#fafafa">           </svg>    <div style="overflow: auto;position: absolute;top: 90px;left: 0;right: 0;bottom: 0;border-top: 1px solid #ddd;">        <svg shape-rendering="crispEdges" class="fixiGridContent" style="width:100%;">                   </svg>    </div></div>';
+    fixiGridTemplates.grid = '<style>    g.tick line { stroke: #ddd; stroke-width: 1px; fill: aquamarine; }    .courtAxis g text { text-anchor: start !important; }</style><div>    <svg shape-rendering="crispEdges" class="fixiGridHeader" style="width:100%;height: 90px;background:#fafafa">           </svg>    <div class="fixiGridContentScroll" style="">        <svg shape-rendering="crispEdges" class="fixiGridContent" style="width:100%;">                   </svg>    </div></div>';
+})(fixiGridTemplates || (fixiGridTemplates = {}));
+var fixiGridTemplates;
+(function (fixiGridTemplates) {
+    fixiGridTemplates.print = '<!DOCTYPE html><html><head>    <meta charset="utf-8" />    <meta name="viewport" content="width=device-width" />    <link href="Scripts/fixi.grid/style/fixiGrid.css" rel="stylesheet" />    <link href="Scripts/fixi.grid/style/fixiGrid.print.css" rel="stylesheet" />    <style>        g.tick line { stroke: #ddd; stroke-width: 1px; fill: aquamarine; }        .courtAxis g text { text-anchor: start !important; }    </style></head><body>     <div id="fixiGrid">          </div></body></html>';
 })(fixiGridTemplates || (fixiGridTemplates = {}));
 /// <reference path="../typings/jquery/jquery.d.ts" />
 /// <reference path="../typings/d3/d3.d.ts" />
@@ -519,6 +614,7 @@ var fixiGridTemplates;
 /// <reference path="components/header.ts" />
 /// <reference path="components/content.ts" />
 /// <reference path="templates/grid.html.ts" />
+/// <reference path="templates/print.html.ts" />
 var fixiGrid = (function () {
     function fixiGrid(options) {
         var _this = this;
@@ -536,6 +632,20 @@ var fixiGrid = (function () {
             $(window).off("resize.fixiGrid");
             _this.container.off("*");
             _this.container.empty();
+        };
+        this.print = function () {
+            setTimeout(function () {
+                var printerFrame = document.createElement('iframe');
+                var printView = $("<html>");
+                printView.html(fixiGridTemplates.print);
+                printView.find("#fixiGrid").append(_this.container.clone());
+                $(window.document.body).append(printerFrame);
+                printerFrame.contentWindow.document.writeln(printView.html());
+                setTimeout(function () {
+                    printerFrame.contentDocument.execCommand('print', false, null);
+                    printerFrame.parentNode.removeChild(printerFrame);
+                }, 250);
+            }, 200);
         };
         this.container = $("#" + options.id);
         this.element = this.container.append(fixiGridTemplates.grid);
@@ -558,9 +668,10 @@ var fixiGrid = (function () {
             if (type == "edit" && options.event && options.event.onOpen)
                 options.event.onOpen(data, e);
         });
-        $(this.components.content).on("ongamechange", function (e, data, courtId, from, to) {
+        $(this.components.content).on("ongamechange", function (e, data, unitCell, from, to) {
+            var court = _this.components.header.convertUnitCellToCourt(data, unitCell);
             if (options.event && options.event.onChange)
-                options.event.onChange(data, courtId, from, to);
+                options.event.onChange(data, court, from, to);
         });
         $(window).on("resize.fixiGrid", function () { _this.refreshSize(); });
     }
