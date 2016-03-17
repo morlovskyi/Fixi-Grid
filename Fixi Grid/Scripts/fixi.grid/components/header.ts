@@ -1,35 +1,34 @@
 ﻿/// <reference path="../../typings/d3/d3.d.ts" />
-/// <reference path="../models/court.ts" />
-namespace fixiGridComponents {
-    export class fixiGridHeader {
-        private options: fixiGridHeaderArgs;
+namespace FixiGridUI.FixiGridComponents {
+    export class FixiGridHeader {
+        private options: FixiGridHeaderArgs;
         private fixiGridSize = {
             width: 0,
             height: 0
         }
-        public countHeader: d3.Selection<fixiCourtDB>;
+        public countHeader: d3.Selection<FixiCourtDB>;
         get height() { return this.courtLevelCount * 30 };
         get courtLevelCount() { return this.courts.length };
 
         public scale = d3.scale.linear();
-        public courts: fixiCourtDB[][]
+        public courts: FixiCourtDB[][]
         get sectionWidth() { return this.scale(1) }
         public courtMetrikRegistry: any = {};
-        constructor(args: fixiGridHeaderArgs) {
+        constructor(args: FixiGridHeaderArgs) {
             this.options = args;
             this.countHeader = args.d3Container.append("g").classed("court-header", true)
         }
-        public refreshSize(width: number, height: number) {
-            this.fixiGridSize.width = width;
-            this.fixiGridSize.height = width;
+        public refreshSize(config: Models.SizeConfiguration) {
+            this.fixiGridSize.width = config.width;
+            this.fixiGridSize.height = config.height;
 
-            this.scale.range([0, width - 90])
+            this.scale.range([0, config.width - config.timeLineWidth])
             this.reposition();
         }
-        public setCourts(courts: fixiCourtDB[]) {
-            var groupedByCelSize = fixiGridUtils.groupBy(courts, "ColSpan")
+        public setCourts(courts: FixiCourtDB[]) {
+            var groupedByCelSize = Utils.groupBy(courts, "ColSpan")
             var max = 0;
-            var groupedByCelSizeArray: fixiCourtDB[][] = [];
+            var groupedByCelSizeArray: FixiCourtDB[][] = [];
             for (var i in groupedByCelSize) {
                 max = (max > groupedByCelSize[i].length) ? max : groupedByCelSize[i].length
                 groupedByCelSizeArray.push(groupedByCelSize[i])
@@ -47,7 +46,7 @@ namespace fixiGridComponents {
                 .append("g")
                 .classed("court-type", true)
 
-            var court = courtTypes.selectAll<fixiCourtDB[]>(".court")
+            var court = courtTypes.selectAll<FixiCourtDB[]>(".court")
                 .data((d) => { return d })
 
             court.exit().remove();
@@ -125,13 +124,24 @@ namespace fixiGridComponents {
                     y2: 0
                 })
         }
-        public convertUnitCellToCourt(game: fixiCourtGame, unitCell: number): fixiCourtDB {
+        public convertUnitCellToCourt(game: FixiCourtGame, unitCell: number): FixiCourtDB {
             var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
             var requiredColSpanCourts = this.countHeader.selectAll("[data-colspan='" + currentGameCourt.ColSpan + "']").data();
             var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
 
             return requiredColSpanCourts[requiredIndex];
         }
+    }
+    export interface FixiGridHeaderArgs {
+        d3Container: d3.Selection<any>
+    }
+    export interface FixiCourtDB {
+        CourtId: number
+        CourtName: string
+        ParentCourtId: number
+        ColSpan: number
+        RowSpan: number
+        Color: string
     }
 }
 

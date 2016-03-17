@@ -28,17 +28,17 @@ var games = [
     { data: { id: 98 }, user: "Game On Vs Rhinos", division: "Division A", from: new Date(new Date().setHours(17, 15, 0, 0)), to: new Date(new Date().setHours(18, 0, 0, 0)), courtId: 14 },
 ]
 class fixiController {
-    public FixiGrid: fixiGrid;
+    public FixiGrid: FixiGridUI.Grid;
     constructor($scope: any) {
         $scope.title = "Fixi Grid Demo"
         $scope.date = moment();
 
-        this.FixiGrid = new fixiGrid({
+        this.FixiGrid = new FixiGridUI.Grid({
             id: "fixiGridElement",
             event: {
                 onRemove: (data) => {
                     if (confirm("Are you sure?")) {
-                        games = games.filter(d=> d.data.id != data.data.id);
+                        games = games.filter(d => d.data.id != data.data.id);
                         this.fetch();
                     }
                 },
@@ -53,6 +53,7 @@ class fixiController {
                 }
             }
         })
+
         $scope.$watch('date', () => {
             this.FixiGrid.setCourt([
                 { CourtId: 1, CourtName: "Tennis Court 1", ParentCourtId: 9, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
@@ -70,12 +71,19 @@ class fixiController {
                 { CourtId: 13, CourtName: "Football Court 1", ParentCourtId: 0, ColSpan: 4, RowSpan: 1, Color: "white" },
                 { CourtId: 14, CourtName: "Football Court 2", ParentCourtId: 0, ColSpan: 4, RowSpan: 1, Color: "white" }
             ],
-                new Date(new Date().setHours(9, 0, 0, 0)),
+                new Date(new Date().setHours(10, 0, 0, 0)),
                 new Date(new Date().setHours(23, 0, 0, 0))
             )
             this.fetch();
 
         }, true)
+    }
+    public getDataFromApi() {
+        $.ajax({
+            url: "getData",
+        }).then((result) => {
+
+        })
     }
     private fetch() {
         this.FixiGrid.setData({

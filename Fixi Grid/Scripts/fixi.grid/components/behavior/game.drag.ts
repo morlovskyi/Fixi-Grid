@@ -1,9 +1,9 @@
 ﻿/// <reference path="base.ts" />
-namespace fixiGridComponents.behaviors {
-    export class gameDragBehavior extends baseDragBehavior {
+namespace FixiGridUI.FixiGridComponents.Behaviors {
+    export class GameDragBehavior extends BaseDragBehavior {
         protected targetClass = "dragged";  
         protected shadowClass = "shadow"
-        protected drag(d: fixiCourtGame) {
+        protected drag(d: FixiCourtGame) {
             var tempX = (<any>event).pageX - this.dragStartPageX;
             var courtSize = this.courtDict()[d.courtId].size;
             var x = this.rect[0] + tempX + courtSize / 2;

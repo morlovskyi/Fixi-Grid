@@ -12,7 +12,7 @@
                 options: {
                     htmlVarTemplate: 'markup',
                     htmlOutputTemplate: '/* tslint:disable:max-line-length */ \n\
-                      module fixiGridTemplates {\n\
+                      namespace FixiGridUI.Markup {\n\
                           export var <%= modulename %> = \'<%= content %>\';\n\
                       }\n'
                 }

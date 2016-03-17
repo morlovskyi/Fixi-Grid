@@ -31,7 +31,7 @@ var fixiController = (function () {
         var _this = this;
         $scope.title = "Fixi Grid Demo";
         $scope.date = moment();
-        this.FixiGrid = new fixiGrid({
+        this.FixiGrid = new FixiGridUI.Grid({
             id: "fixiGridElement",
             event: {
                 onRemove: function (data) {
@@ -67,14 +67,20 @@ var fixiController = (function () {
                 { CourtId: 12, CourtName: "Handball Court 4", ParentCourtId: 14, ColSpan: 2, RowSpan: 1, Color: "#A0DC7F" },
                 { CourtId: 13, CourtName: "Football Court 1", ParentCourtId: 0, ColSpan: 4, RowSpan: 1, Color: "white" },
                 { CourtId: 14, CourtName: "Football Court 2", ParentCourtId: 0, ColSpan: 4, RowSpan: 1, Color: "white" }
-            ], new Date(new Date().setHours(9, 0, 0, 0)), new Date(new Date().setHours(23, 0, 0, 0)));
+            ], new Date(new Date().setHours(10, 0, 0, 0)), new Date(new Date().setHours(23, 0, 0, 0)));
             _this.fetch();
         }, true);
     }
+    fixiController.prototype.getDataFromApi = function () {
+        $.ajax({
+            url: "getData",
+        }).then(function (result) {
+        });
+    };
     fixiController.prototype.fetch = function () {
         this.FixiGrid.setData({
             games: games
         });
     };
     return fixiController;
-})();
+}());

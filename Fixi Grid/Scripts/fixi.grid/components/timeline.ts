@@ -1,14 +1,19 @@
-﻿namespace fixiGridComponents {
-    export class timeLine {
+﻿namespace FixiGridUI.FixiGridComponents {
+    export class TimeLine {
         public scale = d3.time.scale();
+
         public axis = d3.svg.axis();
-        public args: fixiGridTimeLineArgs;
+
+        public args: FixiGridTimeLineArgs;
+
         public tickCount = 0;
+
         private fixiGridSize = {
             width: 0,
             height: 0
         }
-        constructor(args: fixiGridTimeLineArgs) {
+
+        constructor(args: FixiGridTimeLineArgs) {
             this.args = args;
             this.axis.orient('left')
                 .scale(this.scale)
@@ -16,7 +21,7 @@
                 .tickPadding(-65)
                 .tickFormat(d3.time.format("%I %p"));
             this.args.d3Container.append("rect")
-                .classed("timeline-back", true)
+                .classed("TimeLine-back", true)
 
         }
 
@@ -30,23 +35,23 @@
         }
 
         private render() {
-            this.args.d3Container.append("g").classed("timeLine", true)
+            this.args.d3Container.append("g").classed("TimeLine", true)
             this.reposition();
         }
-        public refreshSize(width: number, height: number) {
-            this.fixiGridSize.width = width;
-            this.fixiGridSize.height = width;
+        public refreshSize(config: Models.SizeConfiguration) {
+            this.fixiGridSize.width = config.width;
+            this.fixiGridSize.height = config.width;
 
-            this.axis.tickSize(90, 1)
+            this.axis.tickSize(config.timeLineWidth, 1)
             this.scale.range([0, this.tickCount * 80])
 
             this.reposition();
         }
         public reposition() {
-            var timeline = this.args.d3Container.select(".timeLine");
-           
-            timeline.call(this.axis)
-            this.args.d3Container.select(".timeline-back")
+            var TimeLine = this.args.d3Container.select(".TimeLine");
+
+            TimeLine.call(this.axis)
+            this.args.d3Container.select(".TimeLine-back")
                 .attr({
                     x: -90,
                     width: 90,
@@ -56,9 +61,13 @@
                     fill: "#fafafa"
                 })
 
-            timeline.selectAll("text").attr({
+            TimeLine.selectAll("text").attr({
                 dy: 18
             })
         }
+    }
+
+    export interface FixiGridTimeLineArgs {
+        d3Container: d3.Selection<any>
     }
 }

@@ -1,8 +1,8 @@
 ﻿/// <reference path="base.ts" />
-namespace fixiGridComponents.behaviors {
-    export class gameResizeTopBehavior extends baseDragBehavior {
+namespace FixiGridUI.FixiGridComponents.Behaviors {
+    export class GameResizeTopBehavior extends BaseDragBehavior {
         protected shadowClass = "resize-shadow"
-        protected drag(d: fixiCourtGame) {
+        protected drag(d: FixiCourtGame) {
             var tempY = (<any>event).pageY - this.dragStartPageY;
             var y = this.scaleY.invert(this.rect[1] + tempY);
             var axisRowValue = this.axisX.ticks()[1];

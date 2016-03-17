@@ -1,6 +1,6 @@
-﻿namespace fixiGridComponents.elements {
-    export class game {
-        public static render(d3svgcontent: d3.Selection<any>, games: fixiCourtGame[]) {
+﻿namespace FixiGridUI.FixiGridComponents.Elements {
+    export class Game {
+        public static render(d3svgcontent: d3.Selection<any>, games: FixiCourtGame[]) {
             var game = d3svgcontent
                 .selectAll(".game")
                 .data(games)
@@ -71,7 +71,7 @@
                 var data = <any>[];
                 if (d.division)
                     data.push(d.division);
-                data.push(fixiGridUtils.toTimeString(d.from) + " - " + fixiGridUtils.toTimeString(d.to))
+                data.push(Utils.toTimeString(d.from) + " - " + Utils.toTimeString(d.to))
                 return data;
             })
 
@@ -82,7 +82,7 @@
             return game;
 
         }
-        public static reposition(d3svgcontent: d3.Selection<any>, scaleY: d3.time.Scale<number, number>, courtDict: courtMetrixDictionary) {
+        public static reposition(d3svgcontent: d3.Selection<any>, scaleY: d3.time.Scale<number, number>, courtDict: CourtMetrixDictionary) {
             var game = d3svgcontent.selectAll(".game")
                 .attr({
                     transform: d=> "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")"

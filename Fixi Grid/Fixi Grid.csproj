@@ -21,7 +21,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
-    <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <NuGetPackageImportStamp>b3874313</NuGetPackageImportStamp>
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
@@ -199,11 +199,11 @@
     <TypeScriptCompile Include="Scripts\fixi.grid\components\d3elements\game.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\header.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\timeline.ts" />
-    <TypeScriptCompile Include="Scripts\fixi.grid\fixiGrid.d.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\fixiGrid.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\infrastructure\utils.ts" />
-    <TypeScriptCompile Include="Scripts\fixi.grid\models\count.constructor.ts" />
-    <TypeScriptCompile Include="Scripts\fixi.grid\models\court.ts" />
+    <TypeScriptCompile Include="Scripts\fixi.grid\models\components.ts" />
+    <TypeScriptCompile Include="Scripts\fixi.grid\models\printer.ts" />
+    <TypeScriptCompile Include="Scripts\fixi.grid\models\uiMarkup.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\templates\grid.html.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\templates\print.html.ts" />
     <TypeScriptCompile Include="Scripts\fixigrid.ts" />

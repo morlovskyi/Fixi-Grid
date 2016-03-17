@@ -1,4 +1,4 @@
-﻿namespace fixiGridUtils {
+﻿namespace FixiGridUI.Utils {
     export function groupBy<T>(array: T[], field: string): { [key: string]: T[] } {
         var dict: { [key: string]: T[] } = {};
         array.forEach((item: any) => {
@@ -20,5 +20,9 @@
         if (minute.length == 1)
             minute = "0" + minute;
         return hour + ":" + minute + " " + zz;
+    }
+   
+    export function getNodesByClassName($el:JQuery, className:string){
+        return $el.get(0).getElementsByClassName(className)
     }
 }

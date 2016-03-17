@@ -6,19 +6,19 @@
     .fixiGridContent .game text:not([data-role="button"]) { pointer-events: none; }
     .fixiGridContent .game text { fill: white; text-shadow: 0 0 1px black; }
 
-.fixiGridContent .timeLine path { opacity: 0.1; }
+.fixiGridContent .TimeLine path { opacity: 0.1; }
 .fixiGridContent .axis-x path,
 .fixiGridContent .axis-y path { display: none; }
 
 .fixiGridContent * { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
-.fixiGridContent .timeLine line,
+.fixiGridContent .TimeLine line,
 .fixiGridContent .axis-y .tick:nth-child(4n+1) line { stroke: rgba(152, 152, 152, 0.62); }
 
-.fixiGridContent .timeLine .tick:first-child line,
+.fixiGridContent .TimeLine .tick:first-child line,
 .fixiGridContent .axis-y .tick:first-child { display: none; }
 
-.fixiGridContent .timeLine .tick text,
+.fixiGridContent .TimeLine .tick text,
 .court-title { text-anchor: middle; fill: #565656; font: 700 12px Arial, Helvetica, sans-serif; }
 
 rect.game-aria-resize-top,

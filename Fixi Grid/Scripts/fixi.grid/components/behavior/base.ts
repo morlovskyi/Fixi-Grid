@@ -1,24 +1,24 @@
-﻿namespace fixiGridComponents.behaviors {
-    export class baseDragBehavior {
-        public behavior: d3.behavior.Drag<fixiCourtGame>;
-        protected target: d3.Selection<fixiCourtGame>;
-        protected shadow: d3.Selection<fixiCourtGame>;
+﻿namespace FixiGridUI.FixiGridComponents.Behaviors {
+    export class BaseDragBehavior {
+        public behavior: d3.behavior.Drag<FixiCourtGame>;
+        protected target: d3.Selection<FixiCourtGame>;
+        protected shadow: d3.Selection<FixiCourtGame>;
         protected rect: [number, number];
         protected animatinoDuration = 150;
         protected dragStartPageX: number;
         protected dragStartPageY: number;
         protected axisX: d3.svg.Axis;
         protected scaleY: d3.time.Scale<number, number>;
-        protected courtDict: () => courtMetrixDictionary;
+        protected courtDict: () => CourtMetrixDictionary;
         protected gameAria: d3.Selection<any>;
         protected gameAriaHeightOriginal: number;
         protected targetClass = "";
         protected shadowClass = "";
-        constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => courtMetrixDictionary) {
+        constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary) {
             this.axisX = axisX;
             this.scaleY = scaleY;
             this.courtDict = courtDict;
-            this.behavior = d3.behavior.drag<fixiCourtGame>()
+            this.behavior = d3.behavior.drag<FixiCourtGame>()
                 .on("dragstart", this.dragStart.bind(this))
                 .on("drag", this.drag.bind(this))
                 .on("dragend", this.dragEnd.bind(this));
@@ -38,9 +38,9 @@
             this.dragStartPageY = (<any>event).pageY;
             clone.appendTo($(gElement).parent());
         }
-        protected drag(d: fixiCourtGame) {
+        protected drag(d: FixiCourtGame) {
         }
-        protected dragEnd(d: fixiCourtGame) {
+        protected dragEnd(d: FixiCourtGame) {
             setTimeout(() => {
                 this.target.classed(this.targetClass, false)
                 this.shadow.remove();
