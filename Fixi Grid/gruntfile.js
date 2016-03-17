@@ -2,13 +2,14 @@
     grunt.initConfig({
         ts: {
             options: {
-                declaration: false
+                declaration: true
             },
             default: {
                 src: ["scripts/fixi.grid/**/*.ts"],
                 out: "scripts/build/fixi.grid.js",
-                watch: "scripts/fixi.grid/**/*.*",
+                watch: ["scripts/fixi.grid/**/*.ts","scripts/fixi.grid/**/*.html"],
                 html: ["scripts/fixi.grid/templates/*.html"],
+                tsconfig:false,
                 options: {
                     htmlVarTemplate: 'markup',
                     htmlOutputTemplate: '/* tslint:disable:max-line-length */ \n\
@@ -33,6 +34,6 @@
 
     });
     grunt.loadNpmTasks("grunt-ts");
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask("default", ["ts", "uglify"]);
+    //grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.registerTask("default", ["ts"]);//, "uglify"
 };

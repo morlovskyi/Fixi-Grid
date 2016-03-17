@@ -1,3 +1,8 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var FixiGridUI;
 (function (FixiGridUI) {
     var FixiGridComponents;
@@ -47,17 +52,11 @@ var FixiGridUI;
                     }, this.animatinoDuration);
                 };
                 return BaseDragBehavior;
-            })();
+            }());
             Behaviors.BaseDragBehavior = BaseDragBehavior;
         })(Behaviors = FixiGridComponents.Behaviors || (FixiGridComponents.Behaviors = {}));
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-/// <reference path="base.ts" />
 var FixiGridUI;
 (function (FixiGridUI) {
     var FixiGridComponents;
@@ -88,12 +87,11 @@ var FixiGridUI;
                     });
                 };
                 return GameDragBehavior;
-            })(Behaviors.BaseDragBehavior);
+            }(Behaviors.BaseDragBehavior));
             Behaviors.GameDragBehavior = GameDragBehavior;
         })(Behaviors = FixiGridComponents.Behaviors || (FixiGridComponents.Behaviors = {}));
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-/// <reference path="base.ts" />
 var FixiGridUI;
 (function (FixiGridUI) {
     var FixiGridComponents;
@@ -119,12 +117,11 @@ var FixiGridUI;
                     });
                 };
                 return GameResizeDownBehavior;
-            })(Behaviors.BaseDragBehavior);
+            }(Behaviors.BaseDragBehavior));
             Behaviors.GameResizeDownBehavior = GameResizeDownBehavior;
         })(Behaviors = FixiGridComponents.Behaviors || (FixiGridComponents.Behaviors = {}));
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-/// <reference path="base.ts" />
 var FixiGridUI;
 (function (FixiGridUI) {
     var FixiGridComponents;
@@ -153,7 +150,7 @@ var FixiGridUI;
                     });
                 };
                 return GameResizeTopBehavior;
-            })(Behaviors.BaseDragBehavior);
+            }(Behaviors.BaseDragBehavior));
             Behaviors.GameResizeTopBehavior = GameResizeTopBehavior;
         })(Behaviors = FixiGridComponents.Behaviors || (FixiGridComponents.Behaviors = {}));
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
@@ -300,12 +297,11 @@ var FixiGridUI;
                         .text(function (d) { return d; });
                 };
                 return Game;
-            })();
+            }());
             Elements.Game = Game;
         })(Elements = FixiGridComponents.Elements || (FixiGridComponents.Elements = {}));
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-/// <reference path="d3elements/game.ts" />
 var FixiGridUI;
 (function (FixiGridUI) {
     var FixiGridComponents;
@@ -416,11 +412,10 @@ var FixiGridUI;
                 this.d3svgcontent.select("g.axis-y").call(this.axis.y);
             };
             return Content;
-        })();
+        }());
         FixiGridComponents.Content = Content;
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-/// <reference path="../../typings/d3/d3.d.ts" />
 var FixiGridUI;
 (function (FixiGridUI) {
     var FixiGridComponents;
@@ -553,7 +548,7 @@ var FixiGridUI;
                 return requiredColSpanCourts[requiredIndex];
             };
             return FixiGridHeader;
-        })();
+        }());
         FixiGridComponents.FixiGridHeader = FixiGridHeader;
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
@@ -614,7 +609,7 @@ var FixiGridUI;
                 });
             };
             return TimeLine;
-        })();
+        }());
         FixiGridComponents.TimeLine = TimeLine;
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
@@ -666,7 +661,7 @@ var FixiGridUI;
                 configurable: true
             });
             return Components;
-        })();
+        }());
         Models.Components = Components;
     })(Models = FixiGridUI.Models || (FixiGridUI.Models = {}));
 })(FixiGridUI || (FixiGridUI = {}));
@@ -693,7 +688,7 @@ var FixiGridUI;
                 };
             }
             return Printer;
-        })();
+        }());
         Models.Printer = Printer;
     })(Models = FixiGridUI.Models || (FixiGridUI.Models = {}));
 })(FixiGridUI || (FixiGridUI = {}));
@@ -740,20 +735,10 @@ var FixiGridUI;
                 return this.config;
             };
             return UIMarkup;
-        })();
+        }());
         Models.UIMarkup = UIMarkup;
     })(Models = FixiGridUI.Models || (FixiGridUI.Models = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-/// <reference path="../typings/jquery/jquery.d.ts" />
-/// <reference path="../typings/d3/d3.d.ts" />
-/// <reference path="components/TimeLine.ts" />
-/// <reference path="components/header.ts" />
-/// <reference path="components/content.ts" />
-/// <reference path="templates/grid.html.ts" />
-/// <reference path="templates/print.html.ts" />
-/// <reference path="models/components.ts" />
-/// <reference path="models/printer.ts" />
-/// <reference path="models/uimarkup.ts" />
 var FixiGridUI;
 (function (FixiGridUI) {
     var Grid = (function () {
@@ -808,7 +793,7 @@ var FixiGridUI;
             this.uiMarkup.d3ContentSelection.attr({ height: this.components.timeLine.scale.range()[1] });
         };
         return Grid;
-    })();
+    }());
     FixiGridUI.Grid = Grid;
 })(FixiGridUI || (FixiGridUI = {}));
 var FixiGridUI;

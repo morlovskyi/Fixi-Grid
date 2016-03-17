@@ -135,3 +135,4 @@ var FixiGridUI;
         FixiGridComponents.FixiGridHeader = FixiGridHeader;
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
+//# sourceMappingURL=header.js.map

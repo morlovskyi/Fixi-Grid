@@ -68,3 +68,4 @@ var FixiGridUI;
     }());
     FixiGridUI.Grid = Grid;
 })(FixiGridUI || (FixiGridUI = {}));
+//# sourceMappingURL=fixiGrid.js.map

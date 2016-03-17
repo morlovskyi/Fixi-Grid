@@ -109,6 +109,7 @@ namespace FixiGridUI.FixiGridComponents {
 
 
             this.axis.x.tickSize(-this.scale.y.range()[1], 1)
+
             this.axis.y.tickSize(-this.scale.x.range()[1], 1)
 
             this.d3svgcontent.select("g.axis-x").call(this.axis.x)
@@ -117,7 +118,7 @@ namespace FixiGridUI.FixiGridComponents {
     }
     export interface GameClickHandlerArgs {
         data: FixiCourtGame
-        type: string // "remove" | "edit"
+        type: "remove" | "edit"
     }
     export interface GameChangeHandlerArgs {
         data: FixiCourtGame

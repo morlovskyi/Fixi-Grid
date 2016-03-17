@@ -39,3 +39,4 @@ var FixiGridUI;
         })(Behaviors = FixiGridComponents.Behaviors || (FixiGridComponents.Behaviors = {}));
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
+//# sourceMappingURL=game.drag.js.map

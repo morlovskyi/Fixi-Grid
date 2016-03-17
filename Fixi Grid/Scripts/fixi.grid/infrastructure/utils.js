@@ -31,3 +31,4 @@ var FixiGridUI;
         Utils.getNodesByClassName = getNodesByClassName;
     })(Utils = FixiGridUI.Utils || (FixiGridUI.Utils = {}));
 })(FixiGridUI || (FixiGridUI = {}));
+//# sourceMappingURL=utils.js.map

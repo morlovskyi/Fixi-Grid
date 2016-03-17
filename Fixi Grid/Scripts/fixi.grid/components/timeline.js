@@ -59,3 +59,4 @@ var FixiGridUI;
         FixiGridComponents.TimeLine = TimeLine;
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
+//# sourceMappingURL=TimeLine.js.map
