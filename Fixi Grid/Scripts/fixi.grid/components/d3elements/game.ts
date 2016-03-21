@@ -14,9 +14,6 @@
             gameArea.exit().remove();
             gameArea.enter().append("rect")
                 .classed("game-aria", true)
-                .on("click", d=> {
-                    $(game).trigger("ongameclick", [d, "edit"])
-                })
                 .on("mouseover", (d, i, y) => {
                     d3.select(event.target).classed("f-hover", true)
                 })

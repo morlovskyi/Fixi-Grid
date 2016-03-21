@@ -14,6 +14,9 @@ namespace FixiGridUI.FixiGridComponents.Behaviors {
             this.gameAria.attr({
                 height: this.gameAriaHeightOriginal + top
             })
+
+
+            this.dragged = true;
         }
     }
 }

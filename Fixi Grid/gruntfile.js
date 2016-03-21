@@ -34,6 +34,6 @@
 
     });
     grunt.loadNpmTasks("grunt-ts");
-    //grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.registerTask("default", ["ts"]);//, "uglify"
+   //grunt.loadNpmTasks('grunt-contrib-uglify');
+   grunt.registerTask("default", ["ts"]);//, "uglify"
 };

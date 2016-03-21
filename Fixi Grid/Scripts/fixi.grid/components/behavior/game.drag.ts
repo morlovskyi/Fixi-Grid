@@ -1,7 +1,7 @@
 ﻿/// <reference path="base.ts" />
 namespace FixiGridUI.FixiGridComponents.Behaviors {
     export class GameDragBehavior extends BaseDragBehavior {
-        protected targetClass = "dragged";  
+        protected targetClass = "dragged";
         protected shadowClass = "shadow"
         protected drag(d: FixiCourtGame) {
             var tempX = (<any>event).pageX - this.dragStartPageX;
@@ -20,6 +20,8 @@ namespace FixiGridUI.FixiGridComponents.Behaviors {
             this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
                 transform: "translate(" + left + "," + top + ")"
             })
+
+            this.dragged = true;
         }
 
     }

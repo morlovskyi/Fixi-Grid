@@ -17,6 +17,7 @@ namespace FixiGridUI {
         constructor(private config: FixiGridOptions) {
             this.uiMarkup = new Models.UIMarkup(config.id);
             this.printer = new Models.Printer(this.uiMarkup);
+
             this.components = new Models.Components(this.uiMarkup);
 
             this.subscribe();
@@ -24,6 +25,7 @@ namespace FixiGridUI {
 
         //#region public methods
         public setData(args: { games: FixiGridComponents.FixiCourtGame[] }) {
+
             this.components.content.render(this.components.header.courts, args.games);
         }
 
@@ -41,6 +43,8 @@ namespace FixiGridUI {
 
         //#region private methods
         private subscribe() {
+            this.uiMarkup.onPrintClick = () => this.printer.print(this.components.content.games, this.components.header.originalCourts, this.components.timeLine.from, this.components.timeLine.to);
+
             this.components.onGameClickHandler = (e, args) => {
                 switch (args.type) {
                     case "remove":
@@ -77,7 +81,7 @@ namespace FixiGridUI {
         //#endregion
     }
     export interface FixiGridOptions {
-        id: string
+        id: string | Element
         event?: {
             onRemove?: (data: FixiGridComponents.FixiCourtGame, event: any) => void
             onOpen?: (data: FixiGridComponents.FixiCourtGame, event: any) => void

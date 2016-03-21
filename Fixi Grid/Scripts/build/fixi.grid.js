@@ -14,6 +14,8 @@ var FixiGridUI;
                     this.animatinoDuration = 150;
                     this.targetClass = "";
                     this.shadowClass = "";
+                    this.dragged = false;
+                    this.isGamePositionValid = null;
                     this.axisX = axisX;
                     this.scaleY = scaleY;
                     this.courtDict = courtDict;
@@ -23,6 +25,7 @@ var FixiGridUI;
                         .on("dragend", this.dragEnd.bind(this));
                 }
                 BaseDragBehavior.prototype.dragStart = function () {
+                    this.dragged = false;
                     var gElement = $(event.srcElement).parent().get(0);
                     var clone = $(gElement).clone();
                     this.target = d3.select(gElement).classed(this.targetClass, true);
@@ -38,18 +41,25 @@ var FixiGridUI;
                 };
                 BaseDragBehavior.prototype.dragEnd = function (d) {
                     var _this = this;
-                    setTimeout(function () {
-                        _this.target.classed(_this.targetClass, false);
-                        _this.shadow.remove();
-                        var translate = d3.transform(_this.shadow.attr("transform")).translate;
-                        var result = {
-                            left: translate[0],
-                            top: translate[1],
-                            width: parseFloat(_this.shadow.select("rect.game-aria").attr("width")),
-                            height: parseFloat(_this.shadow.select("rect.game-aria").attr("height"))
-                        };
-                        $(_this).trigger("change", [result, _this.target, d]);
-                    }, this.animatinoDuration);
+                    if (this.dragged == false) {
+                        this.target.classed(this.targetClass, false);
+                        this.shadow.remove();
+                        $(this).trigger("edit", d);
+                    }
+                    else {
+                        setTimeout(function () {
+                            _this.target.classed(_this.targetClass, false);
+                            _this.shadow.remove();
+                            var translate = d3.transform(_this.shadow.attr("transform")).translate;
+                            var result = {
+                                left: translate[0],
+                                top: translate[1],
+                                width: parseFloat(_this.shadow.select("rect.game-aria").attr("width")),
+                                height: parseFloat(_this.shadow.select("rect.game-aria").attr("height"))
+                            };
+                            $(_this).trigger("change", [result, _this.target, d]);
+                        }, this.animatinoDuration);
+                    }
                 };
                 return BaseDragBehavior;
             }());
@@ -85,6 +95,7 @@ var FixiGridUI;
                     this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
                         transform: "translate(" + left + "," + top + ")"
                     });
+                    this.dragged = true;
                 };
                 return GameDragBehavior;
             }(Behaviors.BaseDragBehavior));
@@ -115,6 +126,7 @@ var FixiGridUI;
                     this.gameAria.attr({
                         height: this.gameAriaHeightOriginal + top
                     });
+                    this.dragged = true;
                 };
                 return GameResizeDownBehavior;
             }(Behaviors.BaseDragBehavior));
@@ -148,6 +160,7 @@ var FixiGridUI;
                     this.gameAria.attr({
                         height: this.gameAriaHeightOriginal + (this.rect[1] - top)
                     });
+                    this.dragged = true;
                 };
                 return GameResizeTopBehavior;
             }(Behaviors.BaseDragBehavior));
@@ -176,9 +189,6 @@ var FixiGridUI;
                     gameArea.exit().remove();
                     gameArea.enter().append("rect")
                         .classed("game-aria", true)
-                        .on("click", function (d) {
-                        $(game).trigger("ongameclick", [d, "edit"]);
-                    })
                         .on("mouseover", function (d, i, y) {
                         d3.select(event.target).classed("f-hover", true);
                     })
@@ -320,6 +330,9 @@ var FixiGridUI;
                     x: d3.svg.axis(),
                     y: d3.svg.axis()
                 };
+                this.isGamePositionValid = function (game, courtPosition, from, to) {
+                    return true;
+                };
                 this.d3svgcontent = args.d3Container.classed("games", true);
                 this.scale.x = args.scaleX;
                 this.scale.y = args.scaleY;
@@ -333,12 +346,19 @@ var FixiGridUI;
                 this.gameDragBehavior = new FixiGridComponents.Behaviors.GameDragBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
                 this.gameResizeTopBehavior = new FixiGridComponents.Behaviors.GameResizeTopBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
                 this.gameResizeDownBehavior = new FixiGridComponents.Behaviors.GameResizeDownBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
+                this.gameDragBehavior.isGamePositionValid = this.gameResizeTopBehavior.isGamePositionValid = this.gameResizeDownBehavior.isGamePositionValid = this.isGamePositionValid;
+                $(this.gameDragBehavior).on("edit", function (e, d) {
+                    return $(_this).trigger("ongameclick", {
+                        data: d,
+                        type: "edit"
+                    });
+                });
                 $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", function (e, xy, target, data) {
                     $(_this).trigger("ongamechange", {
                         data: data,
                         unitCell: _this.scale.x.invert(xy.left),
-                        from: _this.scale.y.invert(xy.top),
-                        to: _this.scale.y.invert(xy.top + xy.height)
+                        from: _this.calibrateDate(_this.scale.y.invert(xy.top)),
+                        to: _this.calibrateDate(_this.scale.y.invert(xy.top + xy.height))
                     });
                 });
                 this.gridRender();
@@ -402,7 +422,8 @@ var FixiGridUI;
                         this.courtDict[court.CourtId] = {
                             color: court.Color,
                             position: this.scale.x(court.ColSpan) * j,
-                            size: this.scale.x(court.ColSpan)
+                            size: this.scale.x(court.ColSpan),
+                            court: court
                         };
                     }
                 }
@@ -410,6 +431,16 @@ var FixiGridUI;
                 this.axis.y.tickSize(-this.scale.x.range()[1], 1);
                 this.d3svgcontent.select("g.axis-x").call(this.axis.x);
                 this.d3svgcontent.select("g.axis-y").call(this.axis.y);
+            };
+            Content.prototype.calibrateDate = function (date) {
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var result = new Date(date.getTime());
+                result.setHours(0, 0, 0, 0);
+                var dayMinutes = (minutes + hours * 60);
+                dayMinutes = parseInt((dayMinutes / 15).toFixed(0)) * 15;
+                result.setMinutes(dayMinutes);
+                return result;
             };
             return Content;
         }());
@@ -497,6 +528,7 @@ var FixiGridUI;
                 this.reposition();
             };
             FixiGridHeader.prototype.setCourts = function (courts) {
+                this.originalCourts = courts;
                 var groupedByCelSize = FixiGridUI.Utils.groupBy(courts, "ColSpan");
                 var max = 0;
                 var groupedByCelSizeArray = [];
@@ -563,13 +595,14 @@ var FixiGridUI;
                 this.tickCount = 0;
                 this.fixiGridSize = {
                     width: 0,
-                    height: 0
+                    height: 0,
+                    timeLineWidth: 0
                 };
                 this.args = args;
                 this.axis.orient('left')
                     .scale(this.scale)
                     .ticks(d3.time.hour, 1)
-                    .tickPadding(-65)
+                    .tickPadding(-40)
                     .tickFormat(d3.time.format("%I %p"));
                 this.args.d3Container.append("rect")
                     .classed("TimeLine-back", true);
@@ -577,6 +610,8 @@ var FixiGridUI;
             TimeLine.prototype.setDate = function (from, to) {
                 if (to < from)
                     return;
+                this.from = from;
+                this.to = to;
                 this.scale.domain([from, to]);
                 this.tickCount = (to.getTime() - from.getTime()) / 1000 / 60 / 60;
                 this.render();
@@ -587,8 +622,9 @@ var FixiGridUI;
             };
             TimeLine.prototype.refreshSize = function (config) {
                 this.fixiGridSize.width = config.width;
-                this.fixiGridSize.height = config.width;
-                this.axis.tickSize(config.timeLineWidth, 1);
+                this.fixiGridSize.height = config.height;
+                this.fixiGridSize.timeLineWidth = config.timeLineWidth;
+                this.axis.tickSize(this.fixiGridSize.timeLineWidth, 1);
                 this.scale.range([0, this.tickCount * 80]);
                 this.reposition();
             };
@@ -597,8 +633,8 @@ var FixiGridUI;
                 TimeLine.call(this.axis);
                 this.args.d3Container.select(".TimeLine-back")
                     .attr({
-                    x: -90,
-                    width: 90,
+                    x: -this.fixiGridSize.timeLineWidth,
+                    width: this.fixiGridSize.timeLineWidth,
                     height: this.fixiGridSize.height
                 })
                     .style({
@@ -617,14 +653,14 @@ var FixiGridUI;
 (function (FixiGridUI) {
     var Markup;
     (function (Markup) {
-        Markup.grid = '<style>    g.tick line { stroke: #ddd; stroke-width: 1px; fill: aquamarine; }    .courtAxis g text { text-anchor: start !important; }</style><div>    <svg shape-rendering="crispEdges" class="FixiGridHeader" style="width:100%;height: 90px;background:#fafafa">           </svg>    <div class="fixiGridContentScroll" style="">        <svg shape-rendering="crispEdges" class="fixiGridContent" style="width:100%;">                   </svg>    </div></div>';
+        Markup.grid = '<div>    <a class="print-button print-button-back hide-onprint"></a>    <svg shape-rendering="crispEdges" class="FixiGridHeader" style="width:100%;height: 90px;background:#fafafa">    </svg>    <div class="fixiGridContentScroll" style="">        <svg shape-rendering="crispEdges" class="fixiGridContent" style="width:100%;">        </svg>    </div></div>';
     })(Markup = FixiGridUI.Markup || (FixiGridUI.Markup = {}));
 })(FixiGridUI || (FixiGridUI = {}));
 var FixiGridUI;
 (function (FixiGridUI) {
     var Markup;
     (function (Markup) {
-        Markup.print = '<!DOCTYPE html><html><head>    <meta charset="utf-8" />    <meta name="viewport" content="width=device-width" />    <link href="Scripts/fixi.grid/style/fixiGrid.css" rel="stylesheet" />    <link href="Scripts/fixi.grid/style/fixiGrid.print.css" rel="stylesheet" />    <style>        g.tick line { stroke: #ddd; stroke-width: 1px; fill: aquamarine; }        .courtAxis g text { text-anchor: start !important; }    </style></head><body>     <div id="fixiGrid">          </div></body></html>';
+        Markup.print = '<!DOCTYPE html><html><head>    <meta charset="utf-8" />    <meta name="viewport" content="width=device-width" />    <link href="Scripts/fixi.grid/style/fixiGrid.css" rel="stylesheet" />    <link href="Scripts/fixi.grid/style/fixiGrid.print.css" rel="stylesheet" />    <style>        .fixiGridContentScroll { position: relative; top: 0; }        .hide-onprint{display:none}        g.tick line { stroke: #ddd; stroke-width: 1px; fill: aquamarine; }        .courtAxis g text { text-anchor: start !important; }        #fixiGrid { position: relative !important; width: 1000px !important; border:1px solid #ddd }    </style></head><body>    <div id="fixiGrid">    </div></body></html>';
     })(Markup = FixiGridUI.Markup || (FixiGridUI.Markup = {}));
 })(FixiGridUI || (FixiGridUI = {}));
 var FixiGridUI;
@@ -671,21 +707,24 @@ var FixiGridUI;
     (function (Models) {
         var Printer = (function () {
             function Printer(uiMarkup) {
-                var _this = this;
-                this.print = function () {
+                this.print = function (games, courts, from, to) {
                     setTimeout(function () {
                         var printerFrame = document.createElement('iframe');
                         var printView = $("<html>");
                         printView.html(FixiGridUI.Markup.print);
-                        printView.find("#fixiGrid").append(_this.uiMarkup.$container.clone());
                         $(window.document.body).append(printerFrame);
                         printerFrame.contentWindow.document.writeln(printView.html());
+                        var printGridNode = printerFrame.contentWindow.document.getElementById("fixiGrid");
+                        var printGrid = new FixiGridUI.Grid({ id: printGridNode });
+                        printGrid.setCourt(courts, from, to);
+                        printGrid.setData({ games: games });
                         setTimeout(function () {
                             printerFrame.contentDocument.execCommand('print', false, null);
                             printerFrame.parentNode.removeChild(printerFrame);
                         }, 250);
                     }, 200);
                 };
+                this.uiMarkup = uiMarkup;
             }
             return Printer;
         }());
@@ -705,9 +744,9 @@ var FixiGridUI;
                 this.config = {
                     width: 0,
                     height: 0,
-                    timeLineWidth: 90
+                    timeLineWidth: 45
                 };
-                this.$container = $(document.getElementById(id));
+                this.$container = $((typeof (id) == "string") ? document.getElementById(id) : id);
                 this.$element = this.$container.append(FixiGridUI.Markup.grid);
                 this.d3HeaderComponentContainer = this.d3HeaderSelection.append("g").attr({ transform: "translate(" + (this.config.timeLineWidth) + "," + 30 + ")" });
                 this.d3ContentComponentContainer = this.d3ContentSelection.append("g").attr({ transform: "translate(" + this.config.timeLineWidth + ",1)" });
@@ -721,6 +760,13 @@ var FixiGridUI;
                     this.d3HeaderSelection = d3.select(this.headerNode);
                     this.contentNode = FixiGridUI.Utils.getNodesByClassName(this.$element, this.cssClasses.content).item(0);
                     this.d3ContentSelection = d3.select(this.contentNode);
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(UIMarkup.prototype, "onPrintClick", {
+                set: function (handler) {
+                    this.$container.find(".print-button").on("click", function () { return handler(); });
                 },
                 enumerable: true,
                 configurable: true
@@ -764,6 +810,7 @@ var FixiGridUI;
         };
         Grid.prototype.subscribe = function () {
             var _this = this;
+            this.uiMarkup.onPrintClick = function () { return _this.printer.print(_this.components.content.games, _this.components.header.originalCourts, _this.components.timeLine.from, _this.components.timeLine.to); };
             this.components.onGameClickHandler = function (e, args) {
                 switch (args.type) {
                     case "remove":

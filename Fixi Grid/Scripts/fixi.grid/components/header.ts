@@ -2,6 +2,7 @@
 namespace FixiGridUI.FixiGridComponents {
     export class FixiGridHeader {
         private options: FixiGridHeaderArgs;
+        public originalCourts: FixiCourtDB[];
         private fixiGridSize = {
             width: 0,
             height: 0
@@ -26,6 +27,7 @@ namespace FixiGridUI.FixiGridComponents {
             this.reposition();
         }
         public setCourts(courts: FixiCourtDB[]) {
+            this.originalCourts = courts;
             var groupedByCelSize = Utils.groupBy(courts, "ColSpan")
             var max = 0;
             var groupedByCelSizeArray: FixiCourtDB[][] = [];

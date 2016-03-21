@@ -40,6 +40,9 @@ namespace FixiGridUI.FixiGridComponents {
                 .call(this.gameResizeTopBehavior.behavior);
             d3Games.selectAll(".game-aria-resize-down")
                 .call(this.gameResizeDownBehavior.behavior);
+
+
+
             this.reposition();
         }
 
@@ -66,19 +69,49 @@ namespace FixiGridUI.FixiGridComponents {
             this.gameResizeTopBehavior = new Behaviors.GameResizeTopBehavior(this.axis.y, this.scale.y, () => this.courtDict);
             this.gameResizeDownBehavior = new Behaviors.GameResizeDownBehavior(this.axis.y, this.scale.y, () => this.courtDict);
 
+            this.gameDragBehavior.isGamePositionValid = this.gameResizeTopBehavior.isGamePositionValid = this.gameResizeDownBehavior.isGamePositionValid = this.isGamePositionValid;
+
+            $(this.gameDragBehavior).on("edit", (e, d) =>
+                $(this).trigger("ongameclick", <GameClickHandlerArgs>{
+                    data: d,
+                    type: "edit"
+                })
+            )
+
             $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", (e: Event, xy: { top: number, left: number, width: number, height: number }, target: d3.Selection<FixiCourtGame>, data: FixiCourtGame) => {
 
                 $(this).trigger("ongamechange", <GameChangeHandlerArgs>{
                     data: data,
                     unitCell: this.scale.x.invert(xy.left),
-                    from: this.scale.y.invert(xy.top),
-                    to: this.scale.y.invert(xy.top + xy.height)
+                    from: this.calibrateDate(this.scale.y.invert(xy.top)),
+                    to: this.calibrateDate(this.scale.y.invert(xy.top + xy.height))
                 })
             })
 
             this.gridRender();
         }
+        private isGamePositionValid = (game: FixiCourtGame, courtPosition: FixiCourtDB, from?: Date, to?: Date) => {
+            //TODO: Get all court per header cell; 
+            //Filter by TIME
+            //If length==0 return true
+            //Else false
 
+            //var rCourt =  this.courtDict[courtId];
+            //var rFromPosition = rCourt.position
+            //var rToPosition = rCourt.position + rCourt.size;
+
+            //return this.games.filter(game => {
+            //    var court = this.courtDict[game.courtId];
+
+            //    var fromPosition = court.position;
+            //    var toPosition = court.position + court.size;
+
+            //    return (rFromPosition <= fromPosition && rToPosition >= fromPosition)
+            //        || (rFromPosition <= toPosition && rToPosition >= toPosition)
+
+            //}).length == 0
+            return true;
+        }
         public render(courts: FixiCourtDB[][], games: FixiCourtGame[]) {
             this.courts = courts;
             this.games = games
@@ -102,7 +135,8 @@ namespace FixiGridUI.FixiGridComponents {
                     this.courtDict[court.CourtId] = {
                         color: court.Color,
                         position: this.scale.x(court.ColSpan) * j,
-                        size: this.scale.x(court.ColSpan)
+                        size: this.scale.x(court.ColSpan),
+                        court: court
                     }
                 }
             }
@@ -114,6 +148,19 @@ namespace FixiGridUI.FixiGridComponents {
 
             this.d3svgcontent.select("g.axis-x").call(this.axis.x)
             this.d3svgcontent.select("g.axis-y").call(this.axis.y)
+        }
+
+        private calibrateDate(date: Date) {
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+
+            var result = new Date(date.getTime());
+            result.setHours(0, 0, 0, 0);
+
+            var dayMinutes = (minutes + hours * 60)
+            dayMinutes = parseInt((dayMinutes / 15).toFixed(0)) * 15;
+            result.setMinutes(dayMinutes);
+            return result;
         }
     }
     export interface GameClickHandlerArgs {
@@ -140,5 +187,5 @@ namespace FixiGridUI.FixiGridComponents {
         to: Date
         courtId: number
     }
-    export interface CourtMetrixDictionary { [id: number]: { size: number, position: number, color: string } }
+    export interface CourtMetrixDictionary { [id: number]: { size: number, position: number, color: string, court: FixiCourtDB } }
 }

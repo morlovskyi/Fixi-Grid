@@ -1,20 +1,26 @@
-﻿namespace FixiGridUI.Models {
+﻿
+namespace FixiGridUI.Models {
     export class Printer {
         private uiMarkup: UIMarkup
 
         constructor(uiMarkup: UIMarkup) {
-
+            this.uiMarkup = uiMarkup
         }
 
-        public print = () => {
+        public print = (games: FixiGridComponents.FixiCourtGame[], courts: FixiGridComponents.FixiCourtDB[], from: Date, to: Date) => {
             setTimeout(() => {
                 var printerFrame = <HTMLIFrameElement>document.createElement('iframe');// $("<iframe>")[0];
                 var printView = $("<html>");
                 printView.html(Markup.print);
-                printView.find("#fixiGrid").append(this.uiMarkup.$container.clone())
-
                 $(window.document.body).append(printerFrame);
                 printerFrame.contentWindow.document.writeln(printView.html())
+
+                var printGridNode = printerFrame.contentWindow.document.getElementById("fixiGrid");
+
+                var printGrid = new FixiGridUI.Grid({ id: printGridNode });
+
+                printGrid.setCourt(courts, from, to)
+                printGrid.setData({ games: games })
 
                 setTimeout(() => {
                     printerFrame.contentDocument.execCommand('print', false, null)

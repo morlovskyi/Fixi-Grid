@@ -19,6 +19,7 @@
         var minute = date.getMinutes().toString();
         if (minute.length == 1)
             minute = "0" + minute;
+
         return hour + ":" + minute + " " + zz;
     }
    

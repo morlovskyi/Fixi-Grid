@@ -14,6 +14,10 @@
         protected gameAriaHeightOriginal: number;
         protected targetClass = "";
         protected shadowClass = "";
+        protected dragged = false;
+
+        public isGamePositionValid: (game: FixiCourtGame, courtPosition: FixiCourtDB, from?: Date, to?: Date) => boolean = null;
+
         constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary) {
             this.axisX = axisX;
             this.scaleY = scaleY;
@@ -25,6 +29,7 @@
         }
 
         protected dragStart() {
+            this.dragged = false;
             var gElement = $(event.srcElement).parent().get(0);
             var clone = $(gElement).clone()
 
@@ -38,21 +43,31 @@
             this.dragStartPageY = (<any>event).pageY;
             clone.appendTo($(gElement).parent());
         }
+
         protected drag(d: FixiCourtGame) {
         }
+
         protected dragEnd(d: FixiCourtGame) {
-            setTimeout(() => {
-                this.target.classed(this.targetClass, false)
+            if (this.dragged == false) {
+                this.target.classed(this.targetClass, false);
                 this.shadow.remove();
-                var translate = d3.transform(this.shadow.attr("transform")).translate;
-                var result = {
-                    left: translate[0],
-                    top: translate[1],
-                    width: parseFloat(this.shadow.select("rect.game-aria").attr("width")),
-                    height: parseFloat(this.shadow.select("rect.game-aria").attr("height"))
-                }
-                $(this).trigger("change", [result, this.target, d])
-            }, this.animatinoDuration)
+
+                $(this).trigger("edit", d)
+            }
+            else {
+                setTimeout(() => {
+                    this.target.classed(this.targetClass, false)
+                    this.shadow.remove();
+                    var translate = d3.transform(this.shadow.attr("transform")).translate;
+                    var result = {
+                        left: translate[0],
+                        top: translate[1],
+                        width: parseFloat(this.shadow.select("rect.game-aria").attr("width")),
+                        height: parseFloat(this.shadow.select("rect.game-aria").attr("height"))
+                    }
+                    $(this).trigger("change", [result, this.target, d])
+                }, this.animatinoDuration)
+            }
         }
     }
 }
