@@ -17,9 +17,11 @@ namespace FixiGridUI.FixiGridComponents.Behaviors {
             var top = this.scaleY(y)
 
             if (left < 0 || top < 0) return;
+
             this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
                 transform: "translate(" + left + "," + top + ")"
             })
+
 
             this.dragged = true;
         }

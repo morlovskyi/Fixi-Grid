@@ -49,4 +49,4 @@ g.tick line { stroke: #ddd; stroke-width: 1px; fill: aquamarine; }
 .print-button { height: 40px; width: 40px; display: inline-block; position: absolute; margin: 24px 4px; cursor: pointer; }
 
 
-.invalid rect { fill: red !important; }
+.game.invalid .game-aria { fill: #E02D1F !important; }

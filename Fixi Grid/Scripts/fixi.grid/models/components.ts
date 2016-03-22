@@ -17,6 +17,33 @@
                 scaleX: this.header.scale,
                 scaleY: this.timeLine.scale
             })
+
+            this.content.dragValidation = (validateGame, rect) => {
+                var court = this.header.convertUnitCellToCourt(validateGame, this.header.scale.invert(rect.left))
+                var from = this.content.scale.y.invert(rect.top + 5);
+                var to = this.content.scale.y.invert(rect.top + rect.height - 5);
+
+                var validateCourt = this.content.courtDict[court.CourtId]
+
+                var gamesByCourtPosition = this.content.games.filter(contentGame => {
+                    if (validateGame == contentGame) return false;
+
+                    var gameCourt = this.content.courtDict[contentGame.courtId];
+
+                    return validateCourt.position == gameCourt.position ||
+                        (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size)||
+                        (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                })
+
+                var gamesByTimeRange = gamesByCourtPosition.filter(contentGame => {
+                    return (from <= contentGame.from && to >= contentGame.from) ||
+                        (from <= contentGame.to && to >= contentGame.to) ||
+                        (from >= contentGame.from && to <= contentGame.to)
+                })
+
+
+                return gamesByTimeRange.length == 0;
+            }
         }
 
         set onGameClickHandler(value: (e: JQueryEventObject, args: FixiGridComponents.GameClickHandlerArgs) => void) {

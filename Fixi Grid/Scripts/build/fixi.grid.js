@@ -21,7 +21,7 @@ var FixiGridUI;
                     this.courtDict = courtDict;
                     this.behavior = d3.behavior.drag()
                         .on("dragstart", this.dragStart.bind(this))
-                        .on("drag", this.drag.bind(this))
+                        .on("drag", this.basedrag.bind(this))
                         .on("dragend", this.dragEnd.bind(this));
                 }
                 BaseDragBehavior.prototype.dragStart = function () {
@@ -37,29 +37,47 @@ var FixiGridUI;
                     this.dragStartPageY = event.pageY;
                     clone.appendTo($(gElement).parent());
                 };
+                BaseDragBehavior.prototype.basedrag = function (d) {
+                    this.drag(d);
+                    this.shadow.classed("invalid", !this.validate(d));
+                };
                 BaseDragBehavior.prototype.drag = function (d) {
                 };
                 BaseDragBehavior.prototype.dragEnd = function (d) {
                     var _this = this;
                     if (this.dragged == false) {
-                        this.target.classed(this.targetClass, false);
-                        this.shadow.remove();
+                        this.resetShadow();
                         $(this).trigger("edit", d);
                     }
                     else {
+                        if (!this.validate(d)) {
+                            return this.resetShadow();
+                        }
+                        ;
                         setTimeout(function () {
-                            _this.target.classed(_this.targetClass, false);
-                            _this.shadow.remove();
-                            var translate = d3.transform(_this.shadow.attr("transform")).translate;
-                            var result = {
-                                left: translate[0],
-                                top: translate[1],
-                                width: parseFloat(_this.shadow.select("rect.game-aria").attr("width")),
-                                height: parseFloat(_this.shadow.select("rect.game-aria").attr("height"))
-                            };
-                            $(_this).trigger("change", [result, _this.target, d]);
+                            _this.resetShadow();
+                            $(_this).trigger("change", [_this.getRect(), _this.target, d]);
                         }, this.animatinoDuration);
                     }
+                };
+                BaseDragBehavior.prototype.resetShadow = function () {
+                    this.target.classed(this.targetClass, false);
+                    this.shadow.remove();
+                };
+                BaseDragBehavior.prototype.validate = function (game) {
+                    if (this.isGamePositionValid)
+                        return this.isGamePositionValid(game, this.getRect());
+                    return true;
+                };
+                BaseDragBehavior.prototype.getRect = function () {
+                    var translate = d3.transform(this.shadow.attr("transform")).translate;
+                    var result = {
+                        left: translate[0],
+                        top: translate[1],
+                        width: parseFloat(this.shadow.select("rect.game-aria").attr("width")),
+                        height: parseFloat(this.shadow.select("rect.game-aria").attr("height"))
+                    };
+                    return result;
                 };
                 return BaseDragBehavior;
             }());
@@ -330,9 +348,6 @@ var FixiGridUI;
                     x: d3.svg.axis(),
                     y: d3.svg.axis()
                 };
-                this.isGamePositionValid = function (game, courtPosition, from, to) {
-                    return true;
-                };
                 this.d3svgcontent = args.d3Container.classed("games", true);
                 this.scale.x = args.scaleX;
                 this.scale.y = args.scaleY;
@@ -346,7 +361,6 @@ var FixiGridUI;
                 this.gameDragBehavior = new FixiGridComponents.Behaviors.GameDragBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
                 this.gameResizeTopBehavior = new FixiGridComponents.Behaviors.GameResizeTopBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
                 this.gameResizeDownBehavior = new FixiGridComponents.Behaviors.GameResizeDownBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
-                this.gameDragBehavior.isGamePositionValid = this.gameResizeTopBehavior.isGamePositionValid = this.gameResizeDownBehavior.isGamePositionValid = this.isGamePositionValid;
                 $(this.gameDragBehavior).on("edit", function (e, d) {
                     return $(_this).trigger("ongameclick", {
                         data: d,
@@ -397,6 +411,15 @@ var FixiGridUI;
                     d3Games.selectAll(".game-aria-resize-down")
                         .call(this.gameResizeDownBehavior.behavior);
                     this.reposition();
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(Content.prototype, "dragValidation", {
+                set: function (validation) {
+                    this.gameDragBehavior.isGamePositionValid = validation;
+                    this.gameResizeTopBehavior.isGamePositionValid = validation;
+                    this.gameResizeDownBehavior.isGamePositionValid = validation;
                 },
                 enumerable: true,
                 configurable: true
@@ -669,6 +692,7 @@ var FixiGridUI;
     (function (Models) {
         var Components = (function () {
             function Components(uiMarkup) {
+                var _this = this;
                 this.uiMarkup = uiMarkup;
                 this.header = new FixiGridUI.FixiGridComponents.FixiGridHeader({
                     d3Container: uiMarkup.d3HeaderComponentContainer
@@ -681,6 +705,26 @@ var FixiGridUI;
                     scaleX: this.header.scale,
                     scaleY: this.timeLine.scale
                 });
+                this.content.dragValidation = function (validateGame, rect) {
+                    var court = _this.header.convertUnitCellToCourt(validateGame, _this.header.scale.invert(rect.left));
+                    var from = _this.content.scale.y.invert(rect.top + 5);
+                    var to = _this.content.scale.y.invert(rect.top + rect.height - 5);
+                    var validateCourt = _this.content.courtDict[court.CourtId];
+                    var gamesByCourtPosition = _this.content.games.filter(function (contentGame) {
+                        if (validateGame == contentGame)
+                            return false;
+                        var gameCourt = _this.content.courtDict[contentGame.courtId];
+                        return validateCourt.position == gameCourt.position ||
+                            (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size) ||
+                            (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                    });
+                    var gamesByTimeRange = gamesByCourtPosition.filter(function (contentGame) {
+                        return (from <= contentGame.from && to >= contentGame.from) ||
+                            (from <= contentGame.to && to >= contentGame.to) ||
+                            (from >= contentGame.from && to <= contentGame.to);
+                    });
+                    return gamesByTimeRange.length == 0;
+                };
             }
             Object.defineProperty(Components.prototype, "onGameClickHandler", {
                 set: function (value) {

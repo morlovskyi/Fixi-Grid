@@ -50,7 +50,12 @@ namespace FixiGridUI.FixiGridComponents {
             x: d3.svg.axis(),
             y: d3.svg.axis()
         }
-
+        set dragValidation(validation: (game: FixiCourtGame, rect: Behaviors.Rect) => boolean) {
+            this.gameDragBehavior.isGamePositionValid = validation;
+            this.gameResizeTopBehavior.isGamePositionValid = validation;
+            this.gameResizeDownBehavior.isGamePositionValid = validation;
+        }
+        
         constructor(args: FixiGridContentArgs) {
             this.d3svgcontent = args.d3Container.classed("games", true);
             this.scale.x = args.scaleX;
@@ -69,7 +74,6 @@ namespace FixiGridUI.FixiGridComponents {
             this.gameResizeTopBehavior = new Behaviors.GameResizeTopBehavior(this.axis.y, this.scale.y, () => this.courtDict);
             this.gameResizeDownBehavior = new Behaviors.GameResizeDownBehavior(this.axis.y, this.scale.y, () => this.courtDict);
 
-            this.gameDragBehavior.isGamePositionValid = this.gameResizeTopBehavior.isGamePositionValid = this.gameResizeDownBehavior.isGamePositionValid = this.isGamePositionValid;
 
             $(this.gameDragBehavior).on("edit", (e, d) =>
                 $(this).trigger("ongameclick", <GameClickHandlerArgs>{
@@ -89,28 +93,6 @@ namespace FixiGridUI.FixiGridComponents {
             })
 
             this.gridRender();
-        }
-        private isGamePositionValid = (game: FixiCourtGame, courtPosition: FixiCourtDB, from?: Date, to?: Date) => {
-            //TODO: Get all court per header cell; 
-            //Filter by TIME
-            //If length==0 return true
-            //Else false
-
-            //var rCourt =  this.courtDict[courtId];
-            //var rFromPosition = rCourt.position
-            //var rToPosition = rCourt.position + rCourt.size;
-
-            //return this.games.filter(game => {
-            //    var court = this.courtDict[game.courtId];
-
-            //    var fromPosition = court.position;
-            //    var toPosition = court.position + court.size;
-
-            //    return (rFromPosition <= fromPosition && rToPosition >= fromPosition)
-            //        || (rFromPosition <= toPosition && rToPosition >= toPosition)
-
-            //}).length == 0
-            return true;
         }
         public render(courts: FixiCourtDB[][], games: FixiCourtGame[]) {
             this.courts = courts;
