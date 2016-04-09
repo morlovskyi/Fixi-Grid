@@ -10,6 +10,7 @@
     })
 
     var businessDate = new Date(2016, 4, 5);
+
     $("#businessDate").val(moment(businessDate).format("YYYY-MM-DD"))
     $("#businessDate").change(() => {
         businessDate = moment($("#businessDate").val()).toDate();
