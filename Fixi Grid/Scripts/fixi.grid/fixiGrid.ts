@@ -24,14 +24,18 @@ namespace FixiGridUI {
         }
 
         //#region public methods
-        public setData(args: { games: FixiGridComponents.FixiCourtGame[] }) {
-
-            this.components.content.render(this.components.header.courts, args.games);
+        public setData(games: FixiGridComponents.FixiCourtGame[]) {
+            this.components.content.render(this.components.header.courts, games);
         }
-
-        public setCourt(courts: FixiGridComponents.FixiCourtDB[], from: Date, to: Date) {
+        public getData() {
+            return this.components.content.games;
+        }
+        public setCourt(courts: FixiGridComponents.FixiCourtDB[]) {
             this.components.header.setCourts(courts)
-            this.components.timeLine.setDate(from, to)
+            this.refreshSize();
+        }
+        public setTimeRange(args: { from: Date, to: Date }) {
+            this.components.timeLine.setDate(args.from, args.to)
             this.refreshSize();
         }
 
@@ -58,17 +62,23 @@ namespace FixiGridUI {
                     default:
                         break;
                 }
-
+                this.refresh();
             }
             this.components.onGameChangeHandler = (e, args) => {
                 var court: FixiGridComponents.FixiCourtDB = this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
 
                 if (this.config.event && this.config.event.onChange)
                     this.config.event.onChange(args.data, court, args.from, args.to)
+
+                this.refresh();
             }
             $(window).on("resize.fixiGrid", () => { this.refreshSize() })
         }
-
+       
+        public refresh() {
+            this.components.content.render(this.components.header.courts, this.getData());
+            this.refreshSize();
+        }
         private refreshSize() {
             var newConfig = this.uiMarkup.refreshSizeConfiguration();
 

@@ -1,6 +1,5 @@
 ﻿/// <autosync enabled="true" />
 /// <reference path="../gruntfile.js" />
-/// <reference path="angular-moment.min.js" />
 /// <reference path="build/fixi.grid.min.js" />
 /// <reference path="d3/d3.js" />
 /// <reference path="d3/d3.tip.js" />

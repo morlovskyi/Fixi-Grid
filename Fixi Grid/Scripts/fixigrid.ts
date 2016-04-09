@@ -1,95 +1,74 @@
-﻿/// <reference path="typings/angularjs/angular.d.ts" />
-/// <reference path="typings/moment/moment.d.ts" />
+﻿$(document).ready(() => {
 
-var app = angular.module("myApp", ['ngMaterial', 'angularMoment']).config(['$controllerProvider', ($controllerProvider: angular.IControllerProvider) => {
-    $controllerProvider.allowGlobals();
-}]);
-var games = [
-    { data: { id: 1 }, user: "Tony", from: new Date(new Date().setHours(10, 30, 0, 0)), to: new Date(new Date().setHours(11, 30, 0, 0)), courtId: 1 },
-    { data: { id: 2 }, user: "Tony", from: new Date(new Date().setHours(10, 30, 0, 0)), to: new Date(new Date().setHours(11, 30, 0, 0)), courtId: 2 },
-    { data: { id: 3 }, user: "Team 18 vs Team 20", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 1 },
-    { data: { id: 4 }, user: "Team 17 vs Team 3", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 2 },
-    { data: { id: 5 }, user: "Team 15 vs Team 5", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 3 },
-    { data: { id: 6 }, user: "Team 19 vs Team 2", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 4 },
-    { data: { id: 7 }, user: "Team 13 vs Team 7", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 5 },
-    { data: { id: 8 }, user: "Team 12 vs Team 8", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 6 },
-    { data: { id: 9 }, user: "Team 11 vs Team 9", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 7 },
-    { data: { id: 11 }, user: "Team 16 vs Team 4", division: "Mixed", from: new Date(new Date().setHours(15, 0, 0, 0)), to: new Date(new Date().setHours(15, 30, 0, 0)), courtId: 8 },
-    { data: { id: 12 }, user: "Team E vs Team J", division: "Division A", from: new Date(new Date().setHours(15, 30, 0, 0)), to: new Date(new Date().setHours(16, 0, 0, 0)), courtId: 9 },
-    { data: { id: 13 }, user: "Team G vs Team H", division: "Division A", from: new Date(new Date().setHours(15, 30, 0, 0)), to: new Date(new Date().setHours(16, 0, 0, 0)), courtId: 10 },
-    { data: { id: 14 }, user: "Team 14 vs Team 6", division: "Mixed", from: new Date(new Date().setHours(15, 30, 0, 0)), to: new Date(new Date().setHours(16, 0, 0, 0)), courtId: 6 },
-    { data: { id: 25 }, user: "Team B vs Team M", division: "Division A", from: new Date(new Date().setHours(15, 30, 0, 0)), to: new Date(new Date().setHours(16, 0, 0, 0)), courtId: 12 },
-    { data: { id: 36 }, user: "Team C vs Team L", division: "Division A", from: new Date(new Date().setHours(16, 0, 0, 0)), to: new Date(new Date().setHours(16, 30, 0, 0)), courtId: 9 },
-    { data: { id: 43 }, user: "Team F vs Team I", division: "Division A", from: new Date(new Date().setHours(16, 0, 0, 0)), to: new Date(new Date().setHours(16, 30, 0, 0)), courtId: 10 },
-    { data: { id: 78 }, user: "Team D vs Team K", division: "Division A", from: new Date(new Date().setHours(16, 0, 0, 0)), to: new Date(new Date().setHours(16, 30, 0, 0)), courtId: 11 },
-    { data: { id: 77 }, user: "Legends Vs Magpies", division: "Division A", from: new Date(new Date().setHours(16, 30, 0, 0)), to: new Date(new Date().setHours(17, 15, 0, 0)), courtId: 13 },
-    { data: { id: 76 }, user: "Eagles Vs Top Team", division: "Division A", from: new Date(new Date().setHours(16, 30, 0, 0)), to: new Date(new Date().setHours(17, 15, 0, 0)), courtId: 14 },
-    { data: { id: 90 }, user: "Demons Vs Whateva's", division: "Division A", from: new Date(new Date().setHours(17, 15, 0, 0)), to: new Date(new Date().setHours(18, 0, 0, 0)), courtId: 13 },
-    { data: { id: 98 }, user: "Game On Vs Rhinos", division: "Division A", from: new Date(new Date().setHours(17, 15, 0, 0)), to: new Date(new Date().setHours(18, 0, 0, 0)), courtId: 14 },
-]
-class fixiController {
-    public FixiGrid: FixiGridUI.Grid;
-    constructor($scope: any) {
-        $scope.title = "Fixi Grid Demo"
-        $scope.date = moment();
+    var fixiGrid = new FixiGridUI.Grid({
+        id: "fixiGridElement",
+        event: {
+            onRemove: onRemoveGameClick,
+            onOpen: onOpenGameClick,
+            onChange: onGamaChange
+        }
+    })
 
-        this.FixiGrid = new FixiGridUI.Grid({
-            id: "fixiGridElement",
-            event: {
-                onRemove: (data) => {
-                    if (confirm("Are you sure?")) {
-                        games = games.filter(d => d.data.id != data.data.id);
-                        this.fetch();
-                    }
-                },
-                onOpen: (game) => {
-                    alert("Edit: " + game.user)
-                },
-                onChange: (game, court, from, to) => {
-                    game.to = to;
-                    game.courtId = court.CourtId;
-                    game.from = from;
-                    this.fetch();
-                }
-            }
-        })
+    var businessDate = new Date(2016, 4, 5);
+    $("#businessDate").val(moment(businessDate).format("YYYY-MM-DD"))
+    $("#businessDate").change(() => {
+        businessDate = moment($("#businessDate").val()).toDate();
+        setTimeRange();
+        fetchGames();
+    })
 
-        $scope.$watch('date', () => {
-            this.FixiGrid.setCourt([
-                { CourtId: 1, CourtName: "Tennis Court 1", ParentCourtId: 9, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 2, CourtName: "Tennis Court 2", ParentCourtId: 9, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 3, CourtName: "Tennis Court 3", ParentCourtId: 10, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 4, CourtName: "Tennis Court 4", ParentCourtId: 10, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 5, CourtName: "Tennis Court 5", ParentCourtId: 11, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 6, CourtName: "Tennis Court 6", ParentCourtId: 11, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 7, CourtName: "Tennis Court 7", ParentCourtId: 12, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 8, CourtName: "Tennis Court 8", ParentCourtId: 12, ColSpan: 1, RowSpan: 1, Color: "#3333FF" },
-                { CourtId: 9, CourtName: "Handball Court 1", ParentCourtId: 13, ColSpan: 2, RowSpan: 1, Color: "#A0DC7F" },
-                { CourtId: 10, CourtName: "Handball Court 2", ParentCourtId: 13, ColSpan: 2, RowSpan: 1, Color: "#A0DC7F" },
-                { CourtId: 11, CourtName: "Handball Court 3", ParentCourtId: 14, ColSpan: 2, RowSpan: 1, Color: "#A0DC7F" },
-                { CourtId: 12, CourtName: "Handball Court 4", ParentCourtId: 14, ColSpan: 2, RowSpan: 1, Color: "#A0DC7F" },
-                { CourtId: 13, CourtName: "Football Court 1", ParentCourtId: 0, ColSpan: 4, RowSpan: 1, Color: "white" },
-                { CourtId: 14, CourtName: "Football Court 2", ParentCourtId: 0, ColSpan: 4, RowSpan: 1, Color: "white" }
-            ],
-                new Date(new Date().setHours(10, 0, 0, 0)),
-                new Date(new Date().setHours(23, 0, 0, 0))
-            )
-            this.fetch();
-
-        }, true)
+    function onRemoveGameClick(game: FixiGridUI.FixiGridComponents.FixiCourtGame) {
+        if (confirm("Are you sure?")) {
+            var games = fixiGrid.getData();
+            fixiGrid.setData(games.filter(d => d.data != game.data));
+        }
     }
-    public getDataFromApi() {
+    function onOpenGameClick(game: FixiGridUI.FixiGridComponents.FixiCourtGame) {
+        alert("Edit: " + game.user)
+    }
+    function onGamaChange(game: FixiGridUI.FixiGridComponents.FixiCourtGame, court: FixiGridUI.FixiGridComponents.FixiCourtDB, from: Date, to: Date) {
+        game.to = to;
+        game.courtId = court.CourtId;
+        game.from = from
+    }
+
+    function fetchCourtStructure() {
+        return $.ajax({
+            url: "api/FixiData/GetCourtStructure"
+        }).then((data: Fixi_Grid.Models.CourtStructure[]) => {
+            fixiGrid.setCourt(data);
+        });
+    }
+    function setTimeRange() {
+        var date = businessDate;
+        var from = new Date(date.getTime());
+        from.setHours(10, 0, 0);
+        var to = new Date(date.getTime());
+        to.setHours(23, 0, 0);
+
+        fixiGrid.setTimeRange({
+            from: from,
+            to: to
+        })
+    }
+    function fetchGames() {
         $.ajax({
-            url: "getData",
-        }).then((result) => {
-
+            url: "api/FixiData/GetGames",
+            data: { businessDate: moment(businessDate).format("YYYY-MM-DD") }
+        }).then((games: Fixi_Grid.Models.FixiGame[]) => {
+            fixiGrid.setData(games.map(g => <FixiGridUI.FixiGridComponents.FixiCourtGame>{
+                courtId: g.CourtId,
+                data: g,
+                division: g.Division,
+                from: moment(g.From).toDate(),
+                to: moment(g.To).toDate(),
+                user: g.User
+            }))
         })
     }
-    private fetch() {
-        this.FixiGrid.setData({
-            games: games
-        })
-    }
-}
 
-
+    fetchCourtStructure().then(() => {
+        setTimeRange();
+        fetchGames()
+    });
+})

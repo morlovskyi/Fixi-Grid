@@ -19,9 +19,6 @@ var FixiGridUI;
                     gameArea.exit().remove();
                     gameArea.enter().append("rect")
                         .classed("game-aria", true)
-                        .on("click", function (d) {
-                        $(game).trigger("ongameclick", [d, "edit"]);
-                    })
                         .on("mouseover", function (d, i, y) {
                         d3.select(event.target).classed("f-hover", true);
                     })
@@ -56,7 +53,8 @@ var FixiGridUI;
                         "data-role": "button"
                     })
                         .on("click", function (d) {
-                        $(game).trigger("ongameclick", [d, "remove"]);
+                        if (event["button"] != 2)
+                            $(game).trigger("ongameclick", [d, "remove"]);
                     });
                     var descriptionGroup = game.selectAll(".description").data(function (d) { return [d]; });
                     descriptionGroup.exit().remove();

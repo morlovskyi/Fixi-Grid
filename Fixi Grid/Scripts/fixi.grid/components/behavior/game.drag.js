@@ -32,6 +32,7 @@ var FixiGridUI;
                     this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
                         transform: "translate(" + left + "," + top + ")"
                     });
+                    this.dragged = true;
                 };
                 return GameDragBehavior;
             }(Behaviors.BaseDragBehavior));

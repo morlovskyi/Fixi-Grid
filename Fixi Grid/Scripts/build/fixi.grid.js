@@ -241,7 +241,8 @@ var FixiGridUI;
                         "data-role": "button"
                     })
                         .on("click", function (d) {
-                        $(game).trigger("ongameclick", [d, "remove"]);
+                        if (event["button"] != 2)
+                            $(game).trigger("ongameclick", [d, "remove"]);
                     });
                     var descriptionGroup = game.selectAll(".description").data(function (d) { return [d]; });
                     descriptionGroup.exit().remove();
@@ -760,8 +761,9 @@ var FixiGridUI;
                         printerFrame.contentWindow.document.writeln(printView.html());
                         var printGridNode = printerFrame.contentWindow.document.getElementById("fixiGrid");
                         var printGrid = new FixiGridUI.Grid({ id: printGridNode });
-                        printGrid.setCourt(courts, from, to);
-                        printGrid.setData({ games: games });
+                        printGrid.setCourt(courts);
+                        printGrid.setTimeRange({ from: from, to: to });
+                        printGrid.setData(games);
                         setTimeout(function () {
                             printerFrame.contentDocument.execCommand('print', false, null);
                             printerFrame.parentNode.removeChild(printerFrame);
@@ -844,12 +846,18 @@ var FixiGridUI;
             this.components = new FixiGridUI.Models.Components(this.uiMarkup);
             this.subscribe();
         }
-        Grid.prototype.setData = function (args) {
-            this.components.content.render(this.components.header.courts, args.games);
+        Grid.prototype.setData = function (games) {
+            this.components.content.render(this.components.header.courts, games);
         };
-        Grid.prototype.setCourt = function (courts, from, to) {
+        Grid.prototype.getData = function () {
+            return this.components.content.games;
+        };
+        Grid.prototype.setCourt = function (courts) {
             this.components.header.setCourts(courts);
-            this.components.timeLine.setDate(from, to);
+            this.refreshSize();
+        };
+        Grid.prototype.setTimeRange = function (args) {
+            this.components.timeLine.setDate(args.from, args.to);
             this.refreshSize();
         };
         Grid.prototype.subscribe = function () {
@@ -868,13 +876,19 @@ var FixiGridUI;
                     default:
                         break;
                 }
+                _this.refresh();
             };
             this.components.onGameChangeHandler = function (e, args) {
                 var court = _this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
                 if (_this.config.event && _this.config.event.onChange)
                     _this.config.event.onChange(args.data, court, args.from, args.to);
+                _this.refresh();
             };
             $(window).on("resize.fixiGrid", function () { _this.refreshSize(); });
+        };
+        Grid.prototype.refresh = function () {
+            this.components.content.render(this.components.header.courts, this.getData());
+            this.refreshSize();
         };
         Grid.prototype.refreshSize = function () {
             var newConfig = this.uiMarkup.refreshSizeConfiguration();

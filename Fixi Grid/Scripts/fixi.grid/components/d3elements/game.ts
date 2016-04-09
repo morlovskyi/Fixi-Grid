@@ -10,7 +10,7 @@
                 .append("g")
                 .classed("game", true);
 
-            var gameArea = game.selectAll(".game-aria").data(d=> [d])
+            var gameArea = game.selectAll(".game-aria").data(d => [d])
             gameArea.exit().remove();
             gameArea.enter().append("rect")
                 .classed("game-aria", true)
@@ -21,34 +21,34 @@
                     d3.select(event.target).classed("f-hover", false)
                 })
 
-            var gameResizeTop = game.selectAll(".game-aria-resize-top").data(d=> [d])
+            var gameResizeTop = game.selectAll(".game-aria-resize-top").data(d => [d])
             gameResizeTop.exit().remove();
             gameResizeTop.enter().append("rect")
                 .classed("game-aria-resize-top", true)
 
 
-            var gameResizeDown = game.selectAll(".game-aria-resize-down").data(d=> [d])
+            var gameResizeDown = game.selectAll(".game-aria-resize-down").data(d => [d])
             gameResizeTop.exit().remove();
             gameResizeTop.enter().append("rect")
                 .classed("game-aria-resize-down", true)
 
 
-            var gameColor = game.selectAll(".game-color").data(d=> [d])
+            var gameColor = game.selectAll(".game-color").data(d => [d])
             gameColor.exit().remove()
             gameColor.enter().append("rect")
                 .classed("game-color", true)
 
-            var gameTitle = game.selectAll(".game-title-1").data(d=> [d])
+            var gameTitle = game.selectAll(".game-title-1").data(d => [d])
             gameTitle.exit().remove();
             gameTitle.enter().append("g")
                 .classed("game-title-1", true)
 
-            var gameTitleText = gameTitle.selectAll(".title").data(d=> [d])
+            var gameTitleText = gameTitle.selectAll(".title").data(d => [d])
             gameTitleText.exit().remove();
             gameTitleText.enter().append("text")
                 .classed("title", true)
 
-            var gameTitleRemoveButton = gameTitle.selectAll(".remove").data(d=> [d])
+            var gameTitleRemoveButton = gameTitle.selectAll(".remove").data(d => [d])
             gameTitleRemoveButton.exit().remove();
             gameTitleRemoveButton.enter().append("text")
                 .classed("remove", true)
@@ -56,15 +56,16 @@
                     "data-role": "button"
                 })
                 .on("click", (d) => {
-                    $(game).trigger("ongameclick", [d, "remove"])
+                    if (event["button"] != 2)
+                        $(game).trigger("ongameclick", [d, "remove"])
                 })
 
-            var descriptionGroup = game.selectAll(".description").data(d=> [d])
+            var descriptionGroup = game.selectAll(".description").data(d => [d])
             descriptionGroup.exit().remove();
             descriptionGroup.enter().append("g")
                 .classed("description", true)
 
-            var descriptionText = descriptionGroup.selectAll("text").data(d=> {
+            var descriptionText = descriptionGroup.selectAll("text").data(d => {
                 var data = <any>[];
                 if (d.division)
                     data.push(d.division);
@@ -82,7 +83,7 @@
         public static reposition(d3svgcontent: d3.Selection<any>, scaleY: d3.time.Scale<number, number>, courtDict: CourtMetrixDictionary) {
             var game = d3svgcontent.selectAll(".game")
                 .attr({
-                    transform: d=> "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")"
+                    transform: d => "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")"
                 })
 
             game.selectAll("rect.game-aria")
@@ -96,14 +97,14 @@
                 })
             game.selectAll(".game-aria-resize-top")
                 .attr({
-                    width: d=> courtDict[d.courtId].size - 4,
+                    width: d => courtDict[d.courtId].size - 4,
                     height: 10,
                 })
             game.selectAll(".game-aria-resize-down")
                 .attr({
-                    width: d=> courtDict[d.courtId].size - 4,
+                    width: d => courtDict[d.courtId].size - 4,
                     height: 10,
-                    y: d=> scaleY(d.to) - scaleY(d.from) - 10,
+                    y: d => scaleY(d.to) - scaleY(d.from) - 10,
                 })
             game.selectAll("rect.game-color")
                 .attr({
@@ -113,7 +114,7 @@
                     height: (d) => scaleY(d.to) - scaleY(d.from) - 5
                 })
                 .style({
-                    fill: d=> courtDict[d.courtId].color
+                    fill: d => courtDict[d.courtId].color
                 })
 
             game.selectAll("text.title")
@@ -123,7 +124,7 @@
                         return courtDict[d.courtId].size / 2
                     }
                 })
-                .text(d=> d.user);
+                .text(d => d.user);
 
             game.selectAll("text.remove")
                 .attr({
@@ -147,7 +148,7 @@
                 .style({
                     "text-anchor": "middle"
                 })
-                .text(d=> d)
+                .text(d => d)
         }
     }
 }

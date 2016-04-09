@@ -30,12 +30,18 @@ var FixiGridUI;
                 this.gameDragBehavior = new FixiGridComponents.Behaviors.GameDragBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
                 this.gameResizeTopBehavior = new FixiGridComponents.Behaviors.GameResizeTopBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
                 this.gameResizeDownBehavior = new FixiGridComponents.Behaviors.GameResizeDownBehavior(this.axis.y, this.scale.y, function () { return _this.courtDict; });
+                $(this.gameDragBehavior).on("edit", function (e, d) {
+                    return $(_this).trigger("ongameclick", {
+                        data: d,
+                        type: "edit"
+                    });
+                });
                 $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", function (e, xy, target, data) {
                     $(_this).trigger("ongamechange", {
                         data: data,
                         unitCell: _this.scale.x.invert(xy.left),
-                        from: _this.scale.y.invert(xy.top),
-                        to: _this.scale.y.invert(xy.top + xy.height)
+                        from: _this.calibrateDate(_this.scale.y.invert(xy.top)),
+                        to: _this.calibrateDate(_this.scale.y.invert(xy.top + xy.height))
                     });
                 });
                 this.gridRender();
@@ -78,6 +84,15 @@ var FixiGridUI;
                 enumerable: true,
                 configurable: true
             });
+            Object.defineProperty(Content.prototype, "dragValidation", {
+                set: function (validation) {
+                    this.gameDragBehavior.isGamePositionValid = validation;
+                    this.gameResizeTopBehavior.isGamePositionValid = validation;
+                    this.gameResizeDownBehavior.isGamePositionValid = validation;
+                },
+                enumerable: true,
+                configurable: true
+            });
             Content.prototype.render = function (courts, games) {
                 this.courts = courts;
                 this.games = games;
@@ -99,7 +114,8 @@ var FixiGridUI;
                         this.courtDict[court.CourtId] = {
                             color: court.Color,
                             position: this.scale.x(court.ColSpan) * j,
-                            size: this.scale.x(court.ColSpan)
+                            size: this.scale.x(court.ColSpan),
+                            court: court
                         };
                     }
                 }
@@ -107,6 +123,16 @@ var FixiGridUI;
                 this.axis.y.tickSize(-this.scale.x.range()[1], 1);
                 this.d3svgcontent.select("g.axis-x").call(this.axis.x);
                 this.d3svgcontent.select("g.axis-y").call(this.axis.y);
+            };
+            Content.prototype.calibrateDate = function (date) {
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var result = new Date(date.getTime());
+                result.setHours(0, 0, 0, 0);
+                var dayMinutes = (minutes + hours * 60);
+                dayMinutes = parseInt((dayMinutes / 15).toFixed(0)) * 15;
+                result.setMinutes(dayMinutes);
+                return result;
             };
             return Content;
         }());

@@ -19,8 +19,9 @@ namespace FixiGridUI.Models {
 
                 var printGrid = new FixiGridUI.Grid({ id: printGridNode });
 
-                printGrid.setCourt(courts, from, to)
-                printGrid.setData({ games: games })
+                printGrid.setCourt(courts);
+                printGrid.setTimeRange({ from: from, to: to });
+                printGrid.setData(games);
 
                 setTimeout(() => {
                     printerFrame.contentDocument.execCommand('print', false, null)

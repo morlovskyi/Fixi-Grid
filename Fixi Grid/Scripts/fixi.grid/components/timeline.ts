@@ -37,7 +37,7 @@
 
             this.render();
         }
-
+            
         private render() {
             this.args.d3Container.append("g").classed("TimeLine", true)
             this.reposition();

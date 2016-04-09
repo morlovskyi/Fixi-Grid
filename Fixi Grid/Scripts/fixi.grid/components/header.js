@@ -80,6 +80,7 @@ var FixiGridUI;
                 this.reposition();
             };
             FixiGridHeader.prototype.setCourts = function (courts) {
+                this.originalCourts = courts;
                 var groupedByCelSize = FixiGridUI.Utils.groupBy(courts, "ColSpan");
                 var max = 0;
                 var groupedByCelSizeArray = [];
