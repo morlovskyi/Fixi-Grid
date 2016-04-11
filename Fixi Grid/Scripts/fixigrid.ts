@@ -1,5 +1,4 @@
 ﻿$(document).ready(() => {
-
     var fixiGrid = new FixiGridUI.Grid({
         id: "fixiGridElement",
         event: {
@@ -28,11 +27,24 @@
         alert("Edit: " + game.user)
     }
     function onGamaChange(game: FixiGridUI.FixiGridComponents.FixiCourtGame, court: FixiGridUI.FixiGridComponents.FixiCourtDB, from: Date, to: Date) {
+        //$.ajax({
+        //    url: "SomeUrlForSavingData",
+        //    type: "POST",
+        //    data: {
+
+        //    }
+        //})
+
         game.to = to;
         game.courtId = court.CourtId;
         game.from = from
+
+        
+        //var originalObject: Fixi_Grid.Models.FixiGame = <Fixi_Grid.Models.FixiGame>game.data;
+        //originalObject.
     }
 
+    
     function fetchCourtStructure() {
         return $.ajax({
             url: "api/FixiData/GetCourtStructure"
@@ -40,6 +52,7 @@
             fixiGrid.setCourt(data);
         });
     }
+
     function setTimeRange() {
         var date = businessDate;
         var from = new Date(date.getTime());

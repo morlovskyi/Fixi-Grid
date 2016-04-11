@@ -21,6 +21,7 @@ declare module Fixi_Grid.Models {
 		Division: string;
 		From: Date;
 		Id: number;
+		NewTest: string;
 		To: Date;
 		User: string;
 	}

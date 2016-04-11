@@ -155,6 +155,9 @@
     <Content Include="Global.asax" />
     <Content Include="gruntfile.js" />
     <Content Include="Scripts\build\fixi.grid.min.css" />
+    <Content Include="Scripts\build\versions\beta 0.0.1\fixi.grid.js" />
+    <Content Include="Scripts\build\versions\beta 0.0.1\fixi.grid.min.css" />
+    <Content Include="Scripts\build\versions\beta 0.0.1\fixi.grid.min.js" />
     <Content Include="Scripts\d3\d3.js" />
     <Content Include="Scripts\d3\d3.min.js" />
     <Content Include="Scripts\build\fixi.grid.js" />
@@ -165,6 +168,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Content Include="Scripts\build\versions\beta 0.0.1\fixi.grid.js.map" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\build\fixi.grid.min.js" />
     <Content Include="Scripts\fixi.grid\style\fixiGrid.print.css" />
@@ -205,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\build\fixi.grid.d.ts" />
+    <TypeScriptCompile Include="Scripts\build\versions\beta 0.0.1\fixi.grid.d.ts" />
     <TypeScriptCompile Include="Scripts\Enums.ts">
       <DependentUpon>TypeLite.Net4.tt</DependentUpon>
     </TypeScriptCompile>

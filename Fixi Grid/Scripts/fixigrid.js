@@ -24,9 +24,17 @@ $(document).ready(function () {
         alert("Edit: " + game.user);
     }
     function onGamaChange(game, court, from, to) {
+        //$.ajax({
+        //    url: "SomeUrlForSavingData",
+        //    type: "POST",
+        //    data: {
+        //    }
+        //})
         game.to = to;
         game.courtId = court.CourtId;
         game.from = from;
+        //var originalObject: Fixi_Grid.Models.FixiGame = <Fixi_Grid.Models.FixiGame>game.data;
+        //originalObject.
     }
     function fetchCourtStructure() {
         return $.ajax({

@@ -47,4 +47,5 @@
     grunt.loadNpmTasks("grunt-ts");
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.registerTask('all', ['ts', 'uglify', 'cssmin']);
 };
