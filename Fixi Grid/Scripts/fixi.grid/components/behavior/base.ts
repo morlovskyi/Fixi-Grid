@@ -15,7 +15,7 @@
         protected targetClass = "";
         protected shadowClass = "";
         protected dragged = false;
-
+        public minGameTimeRange = 15;
         public isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean = null;
 
         constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary) {
@@ -72,6 +72,12 @@
                 }, this.animatinoDuration)
             }
         }
+        protected isNewHeightValidByLimit(newHeight: number) {
+            var fromDate = this.scaleY.invert(newHeight);
+            var startDate = this.scaleY.domain()[0];
+            return parseInt(((fromDate.getTime() - startDate.getTime()) / 1000 / 60).toString()) >= this.minGameTimeRange;
+        }
+
         private resetShadow() {
             this.target.classed(this.targetClass, false)
             this.shadow.remove();

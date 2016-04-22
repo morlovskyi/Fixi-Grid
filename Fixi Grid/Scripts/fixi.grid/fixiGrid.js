@@ -21,6 +21,7 @@ var FixiGridUI;
             this.uiMarkup = new FixiGridUI.Models.UIMarkup(config.id);
             this.printer = new FixiGridUI.Models.Printer(this.uiMarkup);
             this.components = new FixiGridUI.Models.Components(this.uiMarkup);
+            this.components.content.setGameMinTimeRange(config.minGameTimnRange);
             this.subscribe();
         }
         //#region public methods

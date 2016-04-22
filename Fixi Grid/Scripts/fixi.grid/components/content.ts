@@ -55,7 +55,7 @@ namespace FixiGridUI.FixiGridComponents {
             this.gameResizeTopBehavior.isGamePositionValid = validation;
             this.gameResizeDownBehavior.isGamePositionValid = validation;
         }
-        
+
         constructor(args: FixiGridContentArgs) {
             this.d3svgcontent = args.d3Container.classed("games", true);
             this.scale.x = args.scaleX;
@@ -73,7 +73,6 @@ namespace FixiGridUI.FixiGridComponents {
             this.gameDragBehavior = new Behaviors.GameDragBehavior(this.axis.y, this.scale.y, () => this.courtDict);
             this.gameResizeTopBehavior = new Behaviors.GameResizeTopBehavior(this.axis.y, this.scale.y, () => this.courtDict);
             this.gameResizeDownBehavior = new Behaviors.GameResizeDownBehavior(this.axis.y, this.scale.y, () => this.courtDict);
-
 
             $(this.gameDragBehavior).on("edit", (e, d) =>
                 $(this).trigger("ongameclick", <GameClickHandlerArgs>{
@@ -93,6 +92,9 @@ namespace FixiGridUI.FixiGridComponents {
             })
 
             this.gridRender();
+        }
+        public setGameMinTimeRange(value: number = 15) {
+            this.gameResizeTopBehavior.minGameTimeRange = this.gameResizeDownBehavior.minGameTimeRange = value;
         }
         public render(courts: FixiCourtDB[][], games: FixiCourtGame[]) {
             this.courts = courts;

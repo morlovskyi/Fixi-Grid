@@ -19,7 +19,7 @@ namespace FixiGridUI {
             this.printer = new Models.Printer(this.uiMarkup);
 
             this.components = new Models.Components(this.uiMarkup);
-
+            this.components.content.setGameMinTimeRange(config.minGameTimnRange);
             this.subscribe();
         }
 
@@ -74,7 +74,7 @@ namespace FixiGridUI {
             }
             $(window).on("resize.fixiGrid", () => { this.refreshSize() })
         }
-       
+
         public refresh() {
             this.components.content.render(this.components.header.courts, this.getData());
             this.refreshSize();
@@ -92,6 +92,7 @@ namespace FixiGridUI {
     }
     export interface FixiGridOptions {
         id: string | Element
+        minGameTimnRange?: number,
         event?: {
             onRemove?: (data: FixiGridComponents.FixiCourtGame, event: any) => void
             onOpen?: (data: FixiGridComponents.FixiCourtGame, event: any) => void

@@ -3,7 +3,6 @@
         public header: FixiGridComponents.FixiGridHeader
         public timeLine: FixiGridComponents.TimeLine
         public content: FixiGridComponents.Content
-
         constructor(private uiMarkup: UIMarkup) {
             this.header = new FixiGridComponents.FixiGridHeader({
                 d3Container: uiMarkup.d3HeaderComponentContainer
@@ -41,7 +40,7 @@
                         (from >= contentGame.from && to <= contentGame.to)
                 })
 
-
+                
                 return gamesByTimeRange.length == 0;
             }
         }

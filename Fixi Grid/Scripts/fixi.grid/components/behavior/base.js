@@ -10,6 +10,7 @@ var FixiGridUI;
                     this.targetClass = "";
                     this.shadowClass = "";
                     this.dragged = false;
+                    this.minGameTimeRange = 15;
                     this.isGamePositionValid = null;
                     this.axisX = axisX;
                     this.scaleY = scaleY;
@@ -54,6 +55,11 @@ var FixiGridUI;
                             $(_this).trigger("change", [_this.getRect(), _this.target, d]);
                         }, this.animatinoDuration);
                     }
+                };
+                BaseDragBehavior.prototype.isNewHeightValidByLimit = function (newHeight) {
+                    var fromDate = this.scaleY.invert(newHeight);
+                    var startDate = this.scaleY.domain()[0];
+                    return parseInt(((fromDate.getTime() - startDate.getTime()) / 1000 / 60).toString()) >= this.minGameTimeRange;
                 };
                 BaseDragBehavior.prototype.resetShadow = function () {
                     this.target.classed(this.targetClass, false);

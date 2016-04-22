@@ -1,21 +1,28 @@
 ﻿/// <reference path="base.ts" />
 namespace FixiGridUI.FixiGridComponents.Behaviors {
     export class GameResizeDownBehavior extends BaseDragBehavior {
+        private newGameHeight: number = null;
+
         protected shadowClass = "resize-shadow"
         protected drag(d: FixiCourtGame) {
-            var tempY = (<any>event).pageY - this.dragStartPageY;
-            var y = this.scaleY.invert(tempY);
-            var axisRowValue = this.axisX.ticks()[1];
-            y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0)
-            var top = this.scaleY(y)
+            this.calculateNewHeight();
 
-            if (this.gameAriaHeightOriginal + top < 0) return;
+            if (this.newGameHeight < 0) return;
+            if (!this.isNewHeightValidByLimit(this.newGameHeight)) return;
 
             this.gameAria.attr({
-                height: this.gameAriaHeightOriginal + top
+                height: this.newGameHeight
             })
 
             this.dragged = true;
         }
+        private calculateNewHeight() {
+            var point = (<any>event).pageY - this.dragStartPageY;
+            var newDate = this.scaleY.invert(point);
+            var axisRowValue = this.axisX.ticks()[1];
+            newDate.setMinutes(newDate.getMinutes() - (newDate.getMinutes() % axisRowValue), 0)
+            this.newGameHeight = this.gameAriaHeightOriginal + this.scaleY(newDate)
+        }
+    
     }
 }

@@ -15,6 +15,7 @@ var FixiGridUI;
                     this.targetClass = "";
                     this.shadowClass = "";
                     this.dragged = false;
+                    this.minGameTimeRange = 15;
                     this.isGamePositionValid = null;
                     this.axisX = axisX;
                     this.scaleY = scaleY;
@@ -59,6 +60,11 @@ var FixiGridUI;
                             $(_this).trigger("change", [_this.getRect(), _this.target, d]);
                         }, this.animatinoDuration);
                     }
+                };
+                BaseDragBehavior.prototype.isNewHeightValidByLimit = function (newHeight) {
+                    var fromDate = this.scaleY.invert(newHeight);
+                    var startDate = this.scaleY.domain()[0];
+                    return parseInt(((fromDate.getTime() - startDate.getTime()) / 1000 / 60).toString()) >= this.minGameTimeRange;
                 };
                 BaseDragBehavior.prototype.resetShadow = function () {
                     this.target.classed(this.targetClass, false);
@@ -131,20 +137,26 @@ var FixiGridUI;
                 __extends(GameResizeDownBehavior, _super);
                 function GameResizeDownBehavior() {
                     _super.apply(this, arguments);
+                    this.newGameHeight = null;
                     this.shadowClass = "resize-shadow";
                 }
                 GameResizeDownBehavior.prototype.drag = function (d) {
-                    var tempY = event.pageY - this.dragStartPageY;
-                    var y = this.scaleY.invert(tempY);
-                    var axisRowValue = this.axisX.ticks()[1];
-                    y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
-                    var top = this.scaleY(y);
-                    if (this.gameAriaHeightOriginal + top < 0)
+                    this.calculateNewHeight();
+                    if (this.newGameHeight < 0)
+                        return;
+                    if (!this.isNewHeightValidByLimit(this.newGameHeight))
                         return;
                     this.gameAria.attr({
-                        height: this.gameAriaHeightOriginal + top
+                        height: this.newGameHeight
                     });
                     this.dragged = true;
+                };
+                GameResizeDownBehavior.prototype.calculateNewHeight = function () {
+                    var point = event.pageY - this.dragStartPageY;
+                    var newDate = this.scaleY.invert(point);
+                    var axisRowValue = this.axisX.ticks()[1];
+                    newDate.setMinutes(newDate.getMinutes() - (newDate.getMinutes() % axisRowValue), 0);
+                    this.newGameHeight = this.gameAriaHeightOriginal + this.scaleY(newDate);
                 };
                 return GameResizeDownBehavior;
             }(Behaviors.BaseDragBehavior));
@@ -172,11 +184,15 @@ var FixiGridUI;
                     var top = this.scaleY(y);
                     if (top < 0 && this.rect[1] - top > 0)
                         return;
+                    var newHeight = this.gameAriaHeightOriginal + (this.rect[1] - top);
+                    if (!this.isNewHeightValidByLimit(newHeight))
+                        return;
+                    console.log(newHeight);
                     this.shadow.attr({
                         transform: "translate(" + this.rect[0] + "," + top + ")"
                     });
                     this.gameAria.attr({
-                        height: this.gameAriaHeightOriginal + (this.rect[1] - top)
+                        height: newHeight
                     });
                     this.dragged = true;
                 };
@@ -425,6 +441,10 @@ var FixiGridUI;
                 enumerable: true,
                 configurable: true
             });
+            Content.prototype.setGameMinTimeRange = function (value) {
+                if (value === void 0) { value = 15; }
+                this.gameResizeTopBehavior.minGameTimeRange = this.gameResizeDownBehavior.minGameTimeRange = value;
+            };
             Content.prototype.render = function (courts, games) {
                 this.courts = courts;
                 this.games = games;
@@ -844,6 +864,7 @@ var FixiGridUI;
             this.uiMarkup = new FixiGridUI.Models.UIMarkup(config.id);
             this.printer = new FixiGridUI.Models.Printer(this.uiMarkup);
             this.components = new FixiGridUI.Models.Components(this.uiMarkup);
+            this.components.content.setGameMinTimeRange(config.minGameTimnRange);
             this.subscribe();
         }
         Grid.prototype.setData = function (games) {

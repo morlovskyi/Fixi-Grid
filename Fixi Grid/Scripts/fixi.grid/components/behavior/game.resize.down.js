@@ -14,20 +14,26 @@ var FixiGridUI;
                 __extends(GameResizeDownBehavior, _super);
                 function GameResizeDownBehavior() {
                     _super.apply(this, arguments);
+                    this.newGameHeight = null;
                     this.shadowClass = "resize-shadow";
                 }
                 GameResizeDownBehavior.prototype.drag = function (d) {
-                    var tempY = event.pageY - this.dragStartPageY;
-                    var y = this.scaleY.invert(tempY);
-                    var axisRowValue = this.axisX.ticks()[1];
-                    y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
-                    var top = this.scaleY(y);
-                    if (this.gameAriaHeightOriginal + top < 0)
+                    this.calculateNewHeight();
+                    if (this.newGameHeight < 0)
+                        return;
+                    if (!this.isNewHeightValidByLimit(this.newGameHeight))
                         return;
                     this.gameAria.attr({
-                        height: this.gameAriaHeightOriginal + top
+                        height: this.newGameHeight
                     });
                     this.dragged = true;
+                };
+                GameResizeDownBehavior.prototype.calculateNewHeight = function () {
+                    var point = event.pageY - this.dragStartPageY;
+                    var newDate = this.scaleY.invert(point);
+                    var axisRowValue = this.axisX.ticks()[1];
+                    newDate.setMinutes(newDate.getMinutes() - (newDate.getMinutes() % axisRowValue), 0);
+                    this.newGameHeight = this.gameAriaHeightOriginal + this.scaleY(newDate);
                 };
                 return GameResizeDownBehavior;
             }(Behaviors.BaseDragBehavior));

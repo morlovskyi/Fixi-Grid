@@ -1,6 +1,7 @@
 $(document).ready(function () {
     var fixiGrid = new FixiGridUI.Grid({
         id: "fixiGridElement",
+        minGameTimnRange: 45,
         event: {
             onRemove: onRemoveGameClick,
             onOpen: onOpenGameClick,

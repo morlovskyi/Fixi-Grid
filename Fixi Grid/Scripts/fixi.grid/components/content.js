@@ -93,6 +93,10 @@ var FixiGridUI;
                 enumerable: true,
                 configurable: true
             });
+            Content.prototype.setGameMinTimeRange = function (value) {
+                if (value === void 0) { value = 15; }
+                this.gameResizeTopBehavior.minGameTimeRange = this.gameResizeDownBehavior.minGameTimeRange = value;
+            };
             Content.prototype.render = function (courts, games) {
                 this.courts = courts;
                 this.games = games;

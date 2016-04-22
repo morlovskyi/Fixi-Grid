@@ -17,12 +17,14 @@ declare namespace FixiGridUI.FixiGridComponents.Behaviors {
         protected targetClass: string;
         protected shadowClass: string;
         protected dragged: boolean;
+        minGameTimeRange: number;
         isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean;
         constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary);
         protected dragStart(): void;
         private basedrag(d);
         protected drag(d: FixiCourtGame): void;
         protected dragEnd(d: FixiCourtGame): void;
+        protected isNewHeightValidByLimit(newHeight: number): boolean;
         private resetShadow();
         validate(game: FixiCourtGame): boolean;
         protected getRect(): Rect;
@@ -43,8 +45,10 @@ declare namespace FixiGridUI.FixiGridComponents.Behaviors {
 }
 declare namespace FixiGridUI.FixiGridComponents.Behaviors {
     class GameResizeDownBehavior extends BaseDragBehavior {
+        private newGameHeight;
         protected shadowClass: string;
         protected drag(d: FixiCourtGame): void;
+        private calculateNewHeight();
     }
 }
 declare namespace FixiGridUI.FixiGridComponents.Behaviors {
@@ -81,6 +85,7 @@ declare namespace FixiGridUI.FixiGridComponents {
         };
         dragValidation: (game: FixiCourtGame, rect: Behaviors.Rect) => boolean;
         constructor(args: FixiGridContentArgs);
+        setGameMinTimeRange(value?: number): void;
         render(courts: FixiCourtDB[][], games: FixiCourtGame[]): void;
         reposition(): void;
         private gridRender();
@@ -239,6 +244,7 @@ declare namespace FixiGridUI {
     }
     interface FixiGridOptions {
         id: string | Element;
+        minGameTimnRange?: number;
         event?: {
             onRemove?: (data: FixiGridComponents.FixiCourtGame, event: any) => void;
             onOpen?: (data: FixiGridComponents.FixiCourtGame, event: any) => void;

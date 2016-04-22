@@ -1,6 +1,7 @@
 ﻿$(document).ready(() => {
     var fixiGrid = new FixiGridUI.Grid({
         id: "fixiGridElement",
+        minGameTimnRange: 45,
         event: {
             onRemove: onRemoveGameClick,
             onOpen: onOpenGameClick,
@@ -39,12 +40,12 @@
         game.courtId = court.CourtId;
         game.from = from
 
-        
+
         //var originalObject: Fixi_Grid.Models.FixiGame = <Fixi_Grid.Models.FixiGame>game.data;
         //originalObject.
     }
 
-    
+
     function fetchCourtStructure() {
         return $.ajax({
             url: "api/FixiData/GetCourtStructure"
