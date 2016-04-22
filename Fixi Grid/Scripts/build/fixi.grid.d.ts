@@ -17,6 +17,7 @@ declare namespace FixiGridUI.FixiGridComponents.Behaviors {
         protected targetClass: string;
         protected shadowClass: string;
         protected dragged: boolean;
+        disabled: boolean;
         minGameTimeRange: number;
         isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean;
         constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary);
@@ -229,6 +230,9 @@ declare namespace FixiGridUI {
         private uiMarkup;
         private printer;
         private components;
+        draggable: boolean;
+        resizable: boolean;
+        setGameMinTimeRange: number;
         constructor(config: FixiGridOptions);
         setData(games: FixiGridComponents.FixiCourtGame[]): void;
         getData(): FixiGridComponents.FixiCourtGame[];
@@ -241,14 +245,17 @@ declare namespace FixiGridUI {
         private subscribe();
         refresh(): void;
         private refreshSize();
+        print(): void;
     }
     interface FixiGridOptions {
         id: string | Element;
         minGameTimnRange?: number;
+        resizable?: boolean;
+        draggable?: boolean;
         event?: {
             onRemove?: (data: FixiGridComponents.FixiCourtGame, event: any) => void;
             onOpen?: (data: FixiGridComponents.FixiCourtGame, event: any) => void;
-            onChange?: (data: FixiGridComponents.FixiCourtGame, court: FixiGridComponents.FixiCourtDB, from: Date, to: Date) => void;
+            onChange?: (data: FixiGridComponents.FixiCourtGame, court: FixiGridComponents.FixiCourtDB, from: Date, to: Date) => void | JQueryPromise<any>;
         };
     }
 }

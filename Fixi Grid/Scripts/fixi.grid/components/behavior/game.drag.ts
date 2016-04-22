@@ -15,14 +15,14 @@ namespace FixiGridUI.FixiGridComponents.Behaviors {
             var axisRowValue = this.axisX.ticks()[1];
             y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0)
             var top = this.scaleY(y)
-
+            
             if (left < 0 || top < 0) return;
 
             this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
                 transform: "translate(" + left + "," + top + ")"
             })
 
-
+          
             this.dragged = true;
         }
 

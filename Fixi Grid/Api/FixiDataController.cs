@@ -31,6 +31,13 @@ namespace Fixi_Grid.Api
 
             return Request.CreateResponse<List<CourtStructure>>(HttpStatusCode.OK, courts);
         }
+        [HttpGet]
+        [ActionName("CanChangeCourt")]
+        public HttpResponseMessage CanChangeCourt(int gameId, int courtId)
+        {
+            var cantChangeCourt = gameId == 1 && courtId == 8;
+            return Request.CreateResponse<bool>(HttpStatusCode.OK, !cantChangeCourt);
+        }
         public HttpResponseMessage GetGames(DateTime businessDate)
         {
             var games = new List<FixiGame>();

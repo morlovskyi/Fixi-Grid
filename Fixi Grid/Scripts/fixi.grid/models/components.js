@@ -21,6 +21,8 @@ var FixiGridUI;
                     var court = _this.header.convertUnitCellToCourt(validateGame, _this.header.scale.invert(rect.left));
                     var from = _this.content.scale.y.invert(rect.top + 5);
                     var to = _this.content.scale.y.invert(rect.top + rect.height - 5);
+                    if (!court)
+                        return false;
                     var validateCourt = _this.content.courtDict[court.CourtId];
                     var gamesByCourtPosition = _this.content.games.filter(function (contentGame) {
                         if (validateGame == contentGame)

@@ -14,6 +14,7 @@ namespace FixiGridUI.FixiGridComponents.Behaviors {
             var newHeight = this.gameAriaHeightOriginal + (this.rect[1] - top);
 
             if (!this.isNewHeightValidByLimit(newHeight)) return;
+            
             console.log(newHeight)
             this.shadow.attr({
                 transform: "translate(" + this.rect[0] + "," + top + ")"
@@ -23,7 +24,7 @@ namespace FixiGridUI.FixiGridComponents.Behaviors {
             this.gameAria.attr({
                 height: newHeight
             })
-
+           
             this.dragged = true;
         }
     }

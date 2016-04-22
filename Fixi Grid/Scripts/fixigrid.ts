@@ -2,13 +2,15 @@
     var fixiGrid = new FixiGridUI.Grid({
         id: "fixiGridElement",
         minGameTimnRange: 45,
+        resizable: true,
+        draggable: true,
         event: {
             onRemove: onRemoveGameClick,
             onOpen: onOpenGameClick,
             onChange: onGamaChange
         }
     })
-
+    
     var businessDate = new Date(2016, 4, 5);
 
     $("#businessDate").val(moment(businessDate).format("YYYY-MM-DD"))
@@ -28,17 +30,16 @@
         alert("Edit: " + game.user)
     }
     function onGamaChange(game: FixiGridUI.FixiGridComponents.FixiCourtGame, court: FixiGridUI.FixiGridComponents.FixiCourtDB, from: Date, to: Date) {
-        //$.ajax({
-        //    url: "SomeUrlForSavingData",
-        //    type: "POST",
-        //    data: {
-
-        //    }
-        //})
-
-        game.to = to;
-        game.courtId = court.CourtId;
-        game.from = from
+        return $.ajax({
+            url: "api/FixiData/CanChangeCourt",
+            data: { gameId: (<Fixi_Grid.Models.FixiGame>game.data).Id, courtId: court.CourtId }
+        }).then((can) => {
+            if (can) {
+                game.to = to;
+                game.courtId = court.CourtId;
+                game.from = from
+            }
+        })
 
 
         //var originalObject: Fixi_Grid.Models.FixiGame = <Fixi_Grid.Models.FixiGame>game.data;

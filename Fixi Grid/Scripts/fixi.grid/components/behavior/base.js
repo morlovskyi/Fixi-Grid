@@ -10,6 +10,7 @@ var FixiGridUI;
                     this.targetClass = "";
                     this.shadowClass = "";
                     this.dragged = false;
+                    this.disabled = false;
                     this.minGameTimeRange = 15;
                     this.isGamePositionValid = null;
                     this.axisX = axisX;
@@ -21,6 +22,8 @@ var FixiGridUI;
                         .on("dragend", this.dragEnd.bind(this));
                 }
                 BaseDragBehavior.prototype.dragStart = function () {
+                    if (this.disabled)
+                        return;
                     this.dragged = false;
                     var gElement = $(event.srcElement).parent().get(0);
                     var clone = $(gElement).clone();
@@ -34,6 +37,8 @@ var FixiGridUI;
                     clone.appendTo($(gElement).parent());
                 };
                 BaseDragBehavior.prototype.basedrag = function (d) {
+                    if (this.disabled)
+                        return;
                     this.drag(d);
                     this.shadow.classed("invalid", !this.validate(d));
                 };
@@ -41,6 +46,8 @@ var FixiGridUI;
                 };
                 BaseDragBehavior.prototype.dragEnd = function (d) {
                     var _this = this;
+                    if (this.disabled)
+                        return;
                     if (this.dragged == false) {
                         this.resetShadow();
                         $(this).trigger("edit", d);
@@ -51,6 +58,11 @@ var FixiGridUI;
                         }
                         ;
                         setTimeout(function () {
+                            var rect = _this.getRect();
+                            _this.target.attr({
+                                transform: "translate(" + rect.left + "," + rect.top + ")",
+                                height: rect.height
+                            });
                             _this.resetShadow();
                             $(_this).trigger("change", [_this.getRect(), _this.target, d]);
                         }, this.animatinoDuration);

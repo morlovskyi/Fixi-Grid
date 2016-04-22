@@ -15,6 +15,7 @@
         protected targetClass = "";
         protected shadowClass = "";
         protected dragged = false;
+        public disabled = false;
         public minGameTimeRange = 15;
         public isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean = null;
 
@@ -29,6 +30,8 @@
         }
 
         protected dragStart() {
+            if (this.disabled) return;
+
             this.dragged = false;
             var gElement = $(event.srcElement).parent().get(0);
             var clone = $(gElement).clone()
@@ -45,8 +48,9 @@
         }
 
         private basedrag(d: FixiCourtGame) {
-            this.drag(d);
+            if (this.disabled) return;
 
+            this.drag(d);
             this.shadow.classed("invalid", !this.validate(d))
         }
 
@@ -55,6 +59,8 @@
         }
 
         protected dragEnd(d: FixiCourtGame) {
+            if (this.disabled) return;
+
             if (this.dragged == false) {
                 this.resetShadow();
 
@@ -66,6 +72,11 @@
                 };
 
                 setTimeout(() => {
+                    var rect = this.getRect();
+                    this.target.attr({
+                        transform: "translate(" + rect.left + "," + rect.top + ")",
+                        height: rect.height
+                    })
                     this.resetShadow();
 
                     $(this).trigger("change", [this.getRect(), this.target, d])

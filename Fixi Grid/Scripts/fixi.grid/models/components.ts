@@ -21,6 +21,8 @@
                 var court = this.header.convertUnitCellToCourt(validateGame, this.header.scale.invert(rect.left))
                 var from = this.content.scale.y.invert(rect.top + 5);
                 var to = this.content.scale.y.invert(rect.top + rect.height - 5);
+                if (!court)
+                    return false;
 
                 var validateCourt = this.content.courtDict[court.CourtId]
 

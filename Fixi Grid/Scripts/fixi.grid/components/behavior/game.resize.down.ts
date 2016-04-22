@@ -13,7 +13,7 @@ namespace FixiGridUI.FixiGridComponents.Behaviors {
             this.gameAria.attr({
                 height: this.newGameHeight
             })
-
+          
             this.dragged = true;
         }
         private calculateNewHeight() {

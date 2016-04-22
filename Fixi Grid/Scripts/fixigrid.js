@@ -2,6 +2,8 @@ $(document).ready(function () {
     var fixiGrid = new FixiGridUI.Grid({
         id: "fixiGridElement",
         minGameTimnRange: 45,
+        resizable: true,
+        draggable: true,
         event: {
             onRemove: onRemoveGameClick,
             onOpen: onOpenGameClick,
@@ -25,15 +27,16 @@ $(document).ready(function () {
         alert("Edit: " + game.user);
     }
     function onGamaChange(game, court, from, to) {
-        //$.ajax({
-        //    url: "SomeUrlForSavingData",
-        //    type: "POST",
-        //    data: {
-        //    }
-        //})
-        game.to = to;
-        game.courtId = court.CourtId;
-        game.from = from;
+        return $.ajax({
+            url: "api/FixiData/CanChangeCourt",
+            data: { gameId: game.data.Id, courtId: court.CourtId }
+        }).then(function (can) {
+            if (can) {
+                game.to = to;
+                game.courtId = court.CourtId;
+                game.from = from;
+            }
+        });
         //var originalObject: Fixi_Grid.Models.FixiGame = <Fixi_Grid.Models.FixiGame>game.data;
         //originalObject.
     }

@@ -13,13 +13,24 @@ namespace FixiGridUI {
         private uiMarkup: Models.UIMarkup;
         private printer: Models.Printer;
         private components: Models.Components;
-
+        set draggable(value: boolean) {
+            this.components.content.gameDragBehavior.disabled = !value;
+        }
+        set resizable(value: boolean) {
+            this.components.content.gameResizeDownBehavior.disabled = !value;
+            this.components.content.gameResizeTopBehavior.disabled = !value;
+        }
+        set setGameMinTimeRange(value: number) {
+            this.components.content.setGameMinTimeRange(value);
+        }
         constructor(private config: FixiGridOptions) {
             this.uiMarkup = new Models.UIMarkup(config.id);
             this.printer = new Models.Printer(this.uiMarkup);
-
             this.components = new Models.Components(this.uiMarkup);
-            this.components.content.setGameMinTimeRange(config.minGameTimnRange);
+
+            this.setGameMinTimeRange = config.minGameTimnRange;
+            this.resizable = !!config.resizable;
+            this.draggable = !!config.draggable;
             this.subscribe();
         }
 
@@ -47,8 +58,6 @@ namespace FixiGridUI {
 
         //#region private methods
         private subscribe() {
-            this.uiMarkup.onPrintClick = () => this.printer.print(this.components.content.games, this.components.header.originalCourts, this.components.timeLine.from, this.components.timeLine.to);
-
             this.components.onGameClickHandler = (e, args) => {
                 switch (args.type) {
                     case "remove":
@@ -66,11 +75,16 @@ namespace FixiGridUI {
             }
             this.components.onGameChangeHandler = (e, args) => {
                 var court: FixiGridComponents.FixiCourtDB = this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
-
+                var promiseChange: JQueryPromise<any> = null;
                 if (this.config.event && this.config.event.onChange)
-                    this.config.event.onChange(args.data, court, args.from, args.to)
+                    promiseChange = <JQueryPromise<any>>this.config.event.onChange(args.data, court, args.from, args.to)
 
-                this.refresh();
+                if (promiseChange)
+                    promiseChange.then(() => {
+                        this.refresh();
+                    })
+                else
+                    this.refresh();
             }
             $(window).on("resize.fixiGrid", () => { this.refreshSize() })
         }
@@ -88,15 +102,20 @@ namespace FixiGridUI {
 
             this.uiMarkup.d3ContentSelection.attr({ height: this.components.timeLine.scale.range()[1] });
         }
+        public print() {
+            this.printer.print(this.components.content.games, this.components.header.originalCourts, this.components.timeLine.from, this.components.timeLine.to)
+        }
         //#endregion
     }
     export interface FixiGridOptions {
         id: string | Element
         minGameTimnRange?: number,
+        resizable?: boolean,
+        draggable?: boolean,
         event?: {
             onRemove?: (data: FixiGridComponents.FixiCourtGame, event: any) => void
             onOpen?: (data: FixiGridComponents.FixiCourtGame, event: any) => void
-            onChange?: (data: FixiGridComponents.FixiCourtGame, court: FixiGridComponents.FixiCourtDB, from: Date, to: Date) => void
+            onChange?: (data: FixiGridComponents.FixiCourtGame, court: FixiGridComponents.FixiCourtDB, from: Date, to: Date) => void | JQueryPromise<any>
         }
     }
 }
