@@ -17,14 +17,14 @@ namespace FixiGridUI.FixiGridComponents {
         public courtMetrikRegistry: any = {};
         constructor(args: FixiGridHeaderArgs) {
             this.options = args;
-            this.countHeader = args.d3Container.append("g").classed("court-header", true)
+            this.countHeader = args.d3Container.classed("court-header", true)
         }
         public refreshSize(config: Models.SizeConfiguration) {
             this.fixiGridSize.width = config.width;
             this.fixiGridSize.height = config.height;
 
             this.scale.range([0, config.width - config.timeLineWidth])
-            this.reposition();
+            //this.reposition();
         }
         public setCourts(courts: FixiCourtDB[]) {
             this.originalCourts = courts;
@@ -42,93 +42,64 @@ namespace FixiGridUI.FixiGridComponents {
             this.render();
         }
         public render = () => {
-            var courtHeaders = this.countHeader.selectAll("g").data(this.courts);
+            var courtHeaders = this.countHeader.selectAll("tr").data(this.courts);
             courtHeaders.exit().remove();
             var courtTypes = courtHeaders.enter()
-                .append("g")
+                .append("tr")
                 .classed("court-type", true)
 
-            var court = courtTypes.selectAll<FixiCourtDB[]>(".court")
+            var court = courtTypes.selectAll<FixiCourtDB[]>("th")
                 .data((d) => { return d })
 
             court.exit().remove();
-            var countSection = court.enter().append("g")
+            var countSection = court.enter().append("th")
                 .classed("court", true)
                 .attr({
                     "data-id": (d) => { return d.CourtId },
-                    "data-colspan": (d) => { return d.ColSpan }
-                })
+                    "colspan": (d) => { return d.ColSpan },
+                    "rowspan": (d) => { return d.RowSpan },
+                }).text((d) => { return d.CourtName })
 
-            countSection.append("text")
-                .classed("court-title", true)
-                .attr({
-                    dy: "-1em"
-                })
-                .text((d) => { return d.CourtName })
-
-            countSection.append("line")
-                .classed("court-line-1", true)
-                .attr({
-                    stroke: "silver",
-                    opacity: 0.2
-                })
-
-            countSection.append("line")
-                .classed("court-line-2", true)
-                .attr({
-                    stroke: "black",
-                    opacity: 0.125
-                })
-            countSection.append("line")
-                .classed("court-line-3", true)
-                .attr({
-                    stroke: "black",
-                    opacity: 0.125
-                })
-
-            this.reposition();
-
+            //this.reposition();
         }
-        public reposition() {
-            var type = this.countHeader.selectAll(".court-type").attr({
-                transform: (d, i) => { return "translate(0," + (30 * i) + ")" }
-            })
+        //public reposition() {
+        //    var type = this.countHeader.selectAll(".court-type")
 
-            var court = type.selectAll(".court");
-            court.attr({
-                transform: (d, i) => {
-                    return "translate(" + this.scale(d.ColSpan) * i + ",0)"
-                }
-            })
+        //    var court = type.selectAll(".court");
+        //    court.attr({
+        //        transform: (d, i) => {
+        //            return "translate(" + this.scale(d.ColSpan) * i + ",0)"
+        //        }
+        //    })
 
-            court.selectAll(".court-title").attr({
-                dx: (d, i) => { return this.scale(d.ColSpan) / 2 }
-            })
+        //    court.selectAll(".court-title").attr({
+        //        dx: (d, i) => { return this.scale(d.ColSpan) / 2 }
+        //    })
 
 
-            court.selectAll(".court-line-2")
-                .attr({
-                    x1: (d, i, y) => {
-                        return this.scale(d.ColSpan)
-                    },
-                    x2: (d, i, y) => {
-                        return this.scale(d.ColSpan)
-                    },
-                    y1: 0,
-                    y2: -30,
-                })
+        //    court.selectAll(".court-line-2")
+        //        .attr({
+        //            x1: (d, i, y) => {
+        //                return this.scale(d.ColSpan)
+        //            },
+        //            x2: (d, i, y) => {
+        //                return this.scale(d.ColSpan)
+        //            },
+        //            y1: 0,
+        //            y2: -30,
+        //        })
 
-            court.selectAll(".court-line-3")
-                .attr({
-                    x1: 0,
-                    x2: (d) => { return this.scale(d.ColSpan) },
-                    y1: 0,
-                    y2: 0
-                })
-        }
+        //    court.selectAll(".court-line-3")
+        //        .attr({
+        //            x1: 0,
+        //            x2: (d) => { return this.scale(d.ColSpan) },
+        //            y1: 0,
+        //            y2: 0
+        //        })
+        //}
         public convertUnitCellToCourt(game: FixiCourtGame, unitCell: number): FixiCourtDB {
             var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
-            var requiredColSpanCourts = this.countHeader.selectAll("[data-colspan='" + currentGameCourt.ColSpan + "']").data();
+            var requiredColSpanCourts = this.countHeader.selectAll("[colspan='" + currentGameCourt.ColSpan + "']").data();
             var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
 
             return requiredColSpanCourts[requiredIndex];

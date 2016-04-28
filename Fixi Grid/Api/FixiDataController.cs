@@ -12,23 +12,30 @@ namespace Fixi_Grid.Api
     {
         public HttpResponseMessage GetCourtStructure()
         {
+            //var courts = new List<CourtStructure>() {
+            //    new CourtStructure(){ CourtId= 1, CourtName= "Tennis Court 1", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 2, CourtName= "Tennis Court 2", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 3, CourtName= "Tennis Court 3", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 4, CourtName= "Tennis Court 4", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 5, CourtName= "Tennis Court 5", ParentCourtId= 11, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 6, CourtName= "Tennis Court 6", ParentCourtId= 11, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 7, CourtName= "Tennis Court 7", ParentCourtId= 12, ColSpan= 1, RowSpan= 2, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 8, CourtName= "Tennis Court 8", ParentCourtId= 12, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
+            //    new CourtStructure(){ CourtId= 9, CourtName= "Handball Court 1", ParentCourtId= 13, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
+            //    new CourtStructure(){ CourtId= 10, CourtName= "Handball Court 2", ParentCourtId= 13, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
+            //    new CourtStructure(){ CourtId= 11, CourtName= "Handball Court 3", ParentCourtId= 14, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
+            //    new CourtStructure(){ CourtId= 12, CourtName= "Handball Court 4", ParentCourtId= 14, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
+            //    new CourtStructure(){ CourtId= 13, CourtName= "Football Court 1", ParentCourtId= 0, ColSpan= 4, RowSpan= 1, Color= "white" },
+            //    new CourtStructure(){ CourtId= 14, CourtName= "Football Court 2", ParentCourtId= 0, ColSpan= 4, RowSpan= 1, Color= "white" }
+            //};
             var courts = new List<CourtStructure>() {
                 new CourtStructure(){ CourtId= 1, CourtName= "Tennis Court 1", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ CourtId= 2, CourtName= "Tennis Court 2", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ CourtId= 3, CourtName= "Tennis Court 3", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ CourtId= 4, CourtName= "Tennis Court 4", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
-                new CourtStructure(){ CourtId= 5, CourtName= "Tennis Court 5", ParentCourtId= 11, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
-                new CourtStructure(){ CourtId= 6, CourtName= "Tennis Court 6", ParentCourtId= 11, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
-                new CourtStructure(){ CourtId= 7, CourtName= "Tennis Court 7", ParentCourtId= 12, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
-                new CourtStructure(){ CourtId= 8, CourtName= "Tennis Court 8", ParentCourtId= 12, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
-                new CourtStructure(){ CourtId= 9, CourtName= "Handball Court 1", ParentCourtId= 13, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
-                new CourtStructure(){ CourtId= 10, CourtName= "Handball Court 2", ParentCourtId= 13, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
-                new CourtStructure(){ CourtId= 11, CourtName= "Handball Court 3", ParentCourtId= 14, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
-                new CourtStructure(){ CourtId= 12, CourtName= "Handball Court 4", ParentCourtId= 14, ColSpan= 2, RowSpan= 1, Color= "#A0DC7F" },
-                new CourtStructure(){ CourtId= 13, CourtName= "Football Court 1", ParentCourtId= 0, ColSpan= 4, RowSpan= 1, Color= "white" },
-                new CourtStructure(){ CourtId= 14, CourtName= "Football Court 2", ParentCourtId= 0, ColSpan= 4, RowSpan= 1, Color= "white" }
+                new CourtStructure(){ CourtId= 5, CourtName= "Tennis Court 5", ParentCourtId= 11, ColSpan= 1, RowSpan= 2, Color= "#3333FF" },
+                new CourtStructure(){ CourtId= 9, CourtName= "Handball Court 1", ParentCourtId= 13, ColSpan= 4, RowSpan= 1, Color= "#A0DC7F" },
             };
-
             return Request.CreateResponse<List<CourtStructure>>(HttpStatusCode.OK, courts);
         }
         [HttpGet]

@@ -141,7 +141,6 @@ declare namespace FixiGridUI.FixiGridComponents {
         refreshSize(config: Models.SizeConfiguration): void;
         setCourts(courts: FixiCourtDB[]): void;
         render: () => void;
-        reposition(): void;
         convertUnitCellToCourt(game: FixiCourtGame, unitCell: number): FixiCourtDB;
     }
     interface FixiGridHeaderArgs {

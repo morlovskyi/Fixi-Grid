@@ -38,7 +38,7 @@
             this.$container = $((typeof (id) == "string") ? document.getElementById(<string>id) : <Element>id);
             this.$element = this.$container.append(Markup.grid);
 
-            this.d3HeaderComponentContainer = this.d3HeaderSelection.append("g").attr({ transform: "translate(" + (this.config.timeLineWidth) + "," + 30 + ")" })
+            this.d3HeaderComponentContainer = this.d3HeaderSelection
             this.d3ContentComponentContainer = this.d3ContentSelection.append("g").attr({ transform: "translate(" + this.config.timeLineWidth + ",1)" })
             this.d3TimeLineComponentContainer = this.d3ContentSelection.append("g").attr({ transform: "translate(" + this.config.timeLineWidth + ",1)" })
         }
