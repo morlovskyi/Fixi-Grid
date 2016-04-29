@@ -10,7 +10,7 @@
             onChange: onGamaChange
         }
     })
-    
+
     var businessDate = new Date(2016, 4, 5);
 
     $("#businessDate").val(moment(businessDate).format("YYYY-MM-DD"))
@@ -19,7 +19,9 @@
         setTimeRange();
         fetchGames();
     })
-
+    $("#allowResize").change(() => {
+        fixiGrid.resizable = $("#allowResize").prop("checked")
+    })
     function onRemoveGameClick(game: FixiGridUI.FixiGridComponents.FixiCourtGame) {
         if (confirm("Are you sure?")) {
             var games = fixiGrid.getData();

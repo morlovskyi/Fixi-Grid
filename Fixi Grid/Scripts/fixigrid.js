@@ -17,6 +17,9 @@ $(document).ready(function () {
         setTimeRange();
         fetchGames();
     });
+    $("#allowResize").change(function () {
+        fixiGrid.resizable = $("#allowResize").prop("checked");
+    });
     function onRemoveGameClick(game) {
         if (confirm("Are you sure?")) {
             var games = fixiGrid.getData();

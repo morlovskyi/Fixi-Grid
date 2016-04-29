@@ -1,2 +1,4 @@
 ﻿Fixi Grid/node_modules/
 node_modules/
+obj/
+bin/
