@@ -70,3 +70,39 @@ C:\Users\Maksym.Orlovskyi\Source\Repos\Fixi-Grid\Fixi Grid\bin\TypeLite.Net4.pdb
 C:\Users\Maksym.Orlovskyi\Source\Repos\Fixi-Grid\Fixi Grid\obj\Debug\Fixi Grid.csprojResolveAssemblyReference.cache
 C:\Users\Maksym.Orlovskyi\Source\Repos\Fixi-Grid\Fixi Grid\obj\Debug\Fixi Grid.dll
 C:\Users\Maksym.Orlovskyi\Source\Repos\Fixi-Grid\Fixi Grid\obj\Debug\Fixi Grid.pdb
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Fixi Grid.dll.config
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Fixi Grid.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Fixi Grid.pdb
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Antlr3.Runtime.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Microsoft.Web.Infrastructure.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Newtonsoft.Json.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Net.Http.Formatting.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Helpers.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Http.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Http.WebHost.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Mvc.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Optimization.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Razor.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.WebPages.Deployment.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.WebPages.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.WebPages.Razor.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\TypeLite.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\TypeLite.Net4.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\WebGrease.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Antlr3.Runtime.pdb
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\Newtonsoft.Json.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Net.Http.Formatting.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Helpers.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Http.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Http.WebHost.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Mvc.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Razor.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.WebPages.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.WebPages.Deployment.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.WebPages.Razor.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\System.Web.Optimization.xml
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\TypeLite.pdb
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\bin\TypeLite.Net4.pdb
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\obj\Debug\Fixi Grid.csprojResolveAssemblyReference.cache
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\obj\Debug\Fixi Grid.dll
+C:\Temp\Fixi-Grid\Fixi-Grid\Fixi Grid\obj\Debug\Fixi Grid.pdb

@@ -291,7 +291,9 @@ var FixiGridUI;
                 Game.reposition = function (d3svgcontent, scaleY, courtDict) {
                     var game = d3svgcontent.selectAll(".game")
                         .attr({
-                        transform: function (d) { return "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")"; }
+                        transform: function (d) {
+                            return "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")";
+                        }
                     });
                     game.selectAll("rect.game-aria")
                         .attr({
@@ -485,7 +487,24 @@ var FixiGridUI;
                 }
                 this.axis.x.tickSize(-this.scale.y.range()[1], 1);
                 this.axis.y.tickSize(-this.scale.x.range()[1], 1);
-                this.d3svgcontent.select("g.axis-x").call(this.axis.x);
+                this.d3svgcontent.select("g.axis-x").html("");
+                var content = this.d3svgcontent;
+                var height = this.scale.y.range()[1];
+                d3.select($(this.d3svgcontent[0]).parents('[data-role="root"]').get(0))
+                    .selectAll('[data-role="header"] tr')
+                    .selectAll('th')
+                    .each(function (d, i, y) {
+                    if (y != 0)
+                        return;
+                    var tick = content.select("g.axis-x").append("g")
+                        .classed("tick", true)
+                        .attr("transform", "translate(" + (d3.select(this).property("offsetLeft") + d3.select(this).property("clientWidth") + 1) + ")");
+                    tick.append("line")
+                        .attr({
+                        x2: 0,
+                        y2: height
+                    });
+                });
                 this.d3svgcontent.select("g.axis-y").call(this.axis.y);
             };
             Content.prototype.calibrateDate = function (date) {
@@ -517,7 +536,7 @@ var FixiGridUI;
                 this.scale = d3.scale.linear();
                 this.courtMetrikRegistry = {};
                 this.render = function () {
-                    var courtHeaders = _this.countHeader.selectAll("tr").data(_this.courts);
+                    var courtHeaders = _this.countHeader.selectAll("tr").data(_this.headerData);
                     courtHeaders.exit().remove();
                     var courtTypes = courtHeaders.enter()
                         .append("tr")
@@ -554,20 +573,51 @@ var FixiGridUI;
                 configurable: true
             });
             FixiGridHeader.prototype.refreshSize = function (config) {
-                this.fixiGridSize.width = config.width;
+                this.fixiGridSize.width = config.headerWidth;
                 this.fixiGridSize.height = config.height;
-                this.scale.range([0, config.width - config.timeLineWidth]);
+                this.scale.range([0, config.headerWidth]);
             };
             FixiGridHeader.prototype.setCourts = function (courts) {
                 this.originalCourts = courts;
                 var groupedByCelSize = FixiGridUI.Utils.groupBy(courts, "ColSpan");
                 var max = 0;
+                var min = 1000;
                 var groupedByCelSizeArray = [];
                 for (var i in groupedByCelSize) {
                     max = (max > groupedByCelSize[i].length) ? max : groupedByCelSize[i].length;
                     groupedByCelSizeArray.push(groupedByCelSize[i]);
+                    min = (min > parseInt(i)) ? parseInt(i) : min;
                 }
                 this.scale.domain([0, max]);
+                var header = [];
+                header.push(this.originalCourts.filter(function (c) { return c.ColSpan == min; }).sort(function (a, b) {
+                    if (a.ParentCourtId < b.ParentCourtId)
+                        return -1;
+                    if (a.ParentCourtId > b.ParentCourtId)
+                        return 1;
+                    return 0;
+                }));
+                var length = header[0].length;
+                var index = 0;
+                var stopper = 0;
+                while (length != courts.length || stopper > 10) {
+                    var nextLevel = this.originalCourts.filter(function (c) {
+                        var isParent;
+                        isParent = header[index].filter(function (child) { return child.ParentCourtId == c.CourtId; }).length > 0;
+                        return isParent;
+                    }).sort(function (a, b) {
+                        if (a.CourtId < b.CourtId)
+                            return -1;
+                        if (a.CourtId > b.CourtId)
+                            return 1;
+                        return 0;
+                    });
+                    length += nextLevel.length;
+                    header.push(nextLevel);
+                    index = header.length - 1;
+                    stopper++;
+                }
+                this.headerData = header;
                 this.courts = groupedByCelSizeArray;
                 this.render();
             };
@@ -651,7 +701,7 @@ var FixiGridUI;
 (function (FixiGridUI) {
     var Markup;
     (function (Markup) {
-        Markup.grid = '<div style="display:table;width: 100%;height: 100%;">    <div style="background: #fafafa;padding-left:45px;display:table-row;height: 1%;">        <div style="display:table-cell;padding-left: 45px;padding-right: 24px;">            <table class="FixiGridHeader court-header" style=""></table>        </div>    </div>    <div style="display:table-row">        <div style="display:table-cell">            <div style="position:relative; height:100%;width:100%">                <div class="fixiGridContentScroll" style="top:0;">                    <svg shape-rendering="crispEdges" class="fixiGridContent" style="width:100%;"></svg>                </div>            </div>        </div>    </div></div>';
+        Markup.grid = '<div style="display:table;width: 100%;height: 100%;" data-role="root">    <div style="background: #fafafa;padding-left:45px;display:table-row;height: 1%;">        <div style="display:table-cell;padding-left: 45px;padding-right: 24px;">            <table class="FixiGridHeader court-header" data-role="header"></table>        </div>    </div>    <div style="display:table-row">        <div style="display:table-cell">            <div style="position:relative; height:100%;width:100%">                <div class="fixiGridContentScroll" style="top:0;">                    <svg shape-rendering="crispEdges" class="fixiGridContent" style="width:100%;" data-role="content"></svg>                </div>            </div>        </div>    </div></div>';
     })(Markup = FixiGridUI.Markup || (FixiGridUI.Markup = {}));
 })(FixiGridUI || (FixiGridUI = {}));
 var FixiGridUI;
@@ -731,6 +781,7 @@ var FixiGridUI;
                 this.print = function (games, courts, from, to) {
                     setTimeout(function () {
                         var printerFrame = document.createElement('iframe');
+                        printerFrame.style.opacity = "0";
                         var printView = $("<html>");
                         printView.html(FixiGridUI.Markup.print);
                         $(window.document.body).append(printerFrame);
@@ -766,7 +817,8 @@ var FixiGridUI;
                 this.config = {
                     width: 0,
                     height: 0,
-                    timeLineWidth: 45
+                    timeLineWidth: 45,
+                    headerWidth: 0
                 };
                 this.$container = $((typeof (id) == "string") ? document.getElementById(id) : id);
                 this.$element = this.$container.append(FixiGridUI.Markup.grid);
@@ -798,8 +850,9 @@ var FixiGridUI;
                 this.$container.empty();
             };
             UIMarkup.prototype.refreshSizeConfiguration = function () {
-                this.config.width = this.$container.width() - 25;
+                this.config.width = this.$container.width();
                 this.config.height = this.$container.height();
+                this.config.headerWidth = this.$container.find("[data-role='header']").width();
                 return this.config;
             };
             return UIMarkup;

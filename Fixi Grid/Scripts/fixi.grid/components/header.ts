@@ -20,29 +20,60 @@ namespace FixiGridUI.FixiGridComponents {
             this.countHeader = args.d3Container.classed("court-header", true)
         }
         public refreshSize(config: Models.SizeConfiguration) {
-            this.fixiGridSize.width = config.width;
+            this.fixiGridSize.width = config.headerWidth;
             this.fixiGridSize.height = config.height;
 
-            this.scale.range([0, config.width - config.timeLineWidth])
+            this.scale.range([0, config.headerWidth])
             //this.reposition();
         }
+        public headerData: FixiCourtDB[][];
         public setCourts(courts: FixiCourtDB[]) {
             this.originalCourts = courts;
             var groupedByCelSize = Utils.groupBy(courts, "ColSpan")
             var max = 0;
+            var min = 1000;
             var groupedByCelSizeArray: FixiCourtDB[][] = [];
             for (var i in groupedByCelSize) {
                 max = (max > groupedByCelSize[i].length) ? max : groupedByCelSize[i].length
                 groupedByCelSizeArray.push(groupedByCelSize[i])
+                min = (min > parseInt(i)) ? parseInt(i) : min;
             }
-            this.scale.domain([0, max])
-
+            this.scale.domain([0, max]);
+            var header: FixiCourtDB[][] = [];
+            header.push(this.originalCourts.filter(c => c.ColSpan == min).sort((a, b) => {
+                if (a.ParentCourtId < b.ParentCourtId)
+                    return -1
+                if (a.ParentCourtId > b.ParentCourtId)
+                    return 1;
+                return 0
+            }));
+            var length = header[0].length;
+            var index = 0;
+            var stopper = 0;
+            while (length != courts.length || stopper > 10) {
+                var nextLevel = this.originalCourts.filter(c => {
+                    var isParent;
+                    isParent = header[index].filter(child => child.ParentCourtId == c.CourtId).length > 0;
+                    return isParent;
+                }).sort((a, b) => {
+                    if (a.CourtId < b.CourtId)
+                        return -1
+                    if (a.CourtId > b.CourtId)
+                        return 1;
+                    return 0
+                })
+                length += nextLevel.length;
+                header.push(nextLevel)
+                index = header.length - 1;
+                stopper++;
+            }
+            this.headerData = header;
             this.courts = groupedByCelSizeArray;
 
             this.render();
         }
         public render = () => {
-            var courtHeaders = this.countHeader.selectAll("tr").data(this.courts);
+            var courtHeaders = this.countHeader.selectAll("tr").data(this.headerData);
             courtHeaders.exit().remove();
             var courtTypes = courtHeaders.enter()
                 .append("tr")
@@ -60,43 +91,8 @@ namespace FixiGridUI.FixiGridComponents {
                     "rowspan": (d) => { return d.RowSpan },
                 }).text((d) => { return d.CourtName })
 
-            //this.reposition();
         }
-        //public reposition() {
-        //    var type = this.countHeader.selectAll(".court-type")
-
-        //    var court = type.selectAll(".court");
-        //    court.attr({
-        //        transform: (d, i) => {
-        //            return "translate(" + this.scale(d.ColSpan) * i + ",0)"
-        //        }
-        //    })
-
-        //    court.selectAll(".court-title").attr({
-        //        dx: (d, i) => { return this.scale(d.ColSpan) / 2 }
-        //    })
-
-
-        //    court.selectAll(".court-line-2")
-        //        .attr({
-        //            x1: (d, i, y) => {
-        //                return this.scale(d.ColSpan)
-        //            },
-        //            x2: (d, i, y) => {
-        //                return this.scale(d.ColSpan)
-        //            },
-        //            y1: 0,
-        //            y2: -30,
-        //        })
-
-        //    court.selectAll(".court-line-3")
-        //        .attr({
-        //            x1: 0,
-        //            x2: (d) => { return this.scale(d.ColSpan) },
-        //            y1: 0,
-        //            y2: 0
-        //        })
-        //}
+   
         public convertUnitCellToCourt(game: FixiCourtGame, unitCell: number): FixiCourtDB {
             var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
             var requiredColSpanCourts = this.countHeader.selectAll("[colspan='" + currentGameCourt.ColSpan + "']").data();

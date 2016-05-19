@@ -10,6 +10,7 @@ namespace FixiGridUI.Models {
         public print = (games: FixiGridComponents.FixiCourtGame[], courts: FixiGridComponents.FixiCourtDB[], from: Date, to: Date) => {
             setTimeout(() => {
                 var printerFrame = <HTMLIFrameElement>document.createElement('iframe');// $("<iframe>")[0];
+                printerFrame.style.opacity = "0";
                 var printView = $("<html>");
                 printView.html(Markup.print);
                 $(window.document.body).append(printerFrame);

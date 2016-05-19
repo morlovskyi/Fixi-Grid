@@ -83,7 +83,9 @@
         public static reposition(d3svgcontent: d3.Selection<any>, scaleY: d3.time.Scale<number, number>, courtDict: CourtMetrixDictionary) {
             var game = d3svgcontent.selectAll(".game")
                 .attr({
-                    transform: d => "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")"
+                    transform: d => {
+                        return "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")"
+                    }
                 })
 
             game.selectAll("rect.game-aria")

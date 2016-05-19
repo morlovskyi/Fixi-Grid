@@ -11,7 +11,8 @@ var FixiGridUI;
                 this.config = {
                     width: 0,
                     height: 0,
-                    timeLineWidth: 45
+                    timeLineWidth: 45,
+                    headerWidth: 0
                 };
                 this.$container = $((typeof (id) == "string") ? document.getElementById(id) : id);
                 this.$element = this.$container.append(FixiGridUI.Markup.grid);
@@ -43,8 +44,9 @@ var FixiGridUI;
                 this.$container.empty();
             };
             UIMarkup.prototype.refreshSizeConfiguration = function () {
-                this.config.width = this.$container.width() - 25;
+                this.config.width = this.$container.width();
                 this.config.height = this.$container.height();
+                this.config.headerWidth = this.$container.find("[data-role='header']").width();
                 return this.config;
             };
             return UIMarkup;
@@ -52,4 +54,4 @@ var FixiGridUI;
         Models.UIMarkup = UIMarkup;
     })(Models = FixiGridUI.Models || (FixiGridUI.Models = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-//# sourceMappingURL=uimarkup.js.map
+//# sourceMappingURL=uiMarkup.js.map

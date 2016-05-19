@@ -127,10 +127,27 @@ namespace FixiGridUI.FixiGridComponents {
 
 
             this.axis.x.tickSize(-this.scale.y.range()[1], 1)
-
             this.axis.y.tickSize(-this.scale.x.range()[1], 1)
 
-            this.d3svgcontent.select("g.axis-x").call(this.axis.x)
+            this.d3svgcontent.select("g.axis-x").html("")
+            var content = this.d3svgcontent;
+            var height = this.scale.y.range()[1];
+            d3.select($(this.d3svgcontent[0]).parents('[data-role="root"]').get(0))
+                .selectAll('[data-role="header"] tr')
+                .selectAll('th')
+                .each(function (d, i, y) {
+                    if (y != 0) return;
+
+                    var tick = content.select("g.axis-x").append("g")
+                        .classed("tick", true)
+                        .attr("transform", "translate(" + (d3.select(this).property("offsetLeft") + d3.select(this).property("clientWidth") + 1) + ")")
+                    tick.append("line")
+                        .attr({
+                            x2: 0,
+                            y2: height
+                        });
+
+                })
             this.d3svgcontent.select("g.axis-y").call(this.axis.y)
         }
 

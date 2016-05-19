@@ -75,7 +75,9 @@ var FixiGridUI;
                 Game.reposition = function (d3svgcontent, scaleY, courtDict) {
                     var game = d3svgcontent.selectAll(".game")
                         .attr({
-                        transform: function (d) { return "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")"; }
+                        transform: function (d) {
+                            return "translate(" + courtDict[d.courtId].position + "," + scaleY(d.from) + ")";
+                        }
                     });
                     game.selectAll("rect.game-aria")
                         .attr({

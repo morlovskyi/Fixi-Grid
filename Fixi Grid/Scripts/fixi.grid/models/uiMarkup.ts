@@ -29,7 +29,8 @@
         public config: SizeConfiguration = {
             width: 0,
             height: 0,
-            timeLineWidth: 45
+            timeLineWidth: 45,
+            headerWidth: 0
         }
         set onPrintClick(handler: Function) {
             this.$container.find(".print-button").on("click", () => handler());
@@ -49,15 +50,16 @@
         }
 
         public refreshSizeConfiguration() {
-            this.config.width = this.$container.width() - 25;
+            this.config.width = this.$container.width();
             this.config.height = this.$container.height();
-
+            this.config.headerWidth = this.$container.find("[data-role='header']").width()
             return this.config
         }
     }
     export interface SizeConfiguration {
         width: number
         height: number
+        headerWidth: number
         timeLineWidth: number
     }
 }

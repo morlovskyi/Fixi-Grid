@@ -11,6 +11,9 @@ $(document).ready(function () {
         }
     });
     var businessDate = new Date(2016, 4, 5);
+    $("#print").click(function () {
+        fixiGrid.print();
+    });
     $("#businessDate").val(moment(businessDate).format("YYYY-MM-DD"));
     $("#businessDate").change(function () {
         businessDate = moment($("#businessDate").val()).toDate();

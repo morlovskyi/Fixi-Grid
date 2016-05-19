@@ -139,6 +139,7 @@ declare namespace FixiGridUI.FixiGridComponents {
         courtMetrikRegistry: any;
         constructor(args: FixiGridHeaderArgs);
         refreshSize(config: Models.SizeConfiguration): void;
+        headerData: FixiCourtDB[][];
         setCourts(courts: FixiCourtDB[]): void;
         render: () => void;
         convertUnitCellToCourt(game: FixiCourtGame, unitCell: number): FixiCourtDB;
@@ -220,6 +221,7 @@ declare namespace FixiGridUI.Models {
     interface SizeConfiguration {
         width: number;
         height: number;
+        headerWidth: number;
         timeLineWidth: number;
     }
 }

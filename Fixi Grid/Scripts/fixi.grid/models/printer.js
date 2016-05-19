@@ -7,6 +7,7 @@ var FixiGridUI;
                 this.print = function (games, courts, from, to) {
                     setTimeout(function () {
                         var printerFrame = document.createElement('iframe'); // $("<iframe>")[0];
+                        printerFrame.style.opacity = "0";
                         var printView = $("<html>");
                         printView.html(FixiGridUI.Markup.print);
                         $(window.document.body).append(printerFrame);

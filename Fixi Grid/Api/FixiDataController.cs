@@ -36,6 +36,7 @@ namespace Fixi_Grid.Api
                 new CourtStructure(){ CourtId= 5, CourtName= "Tennis Court 5", ParentCourtId= 11, ColSpan= 1, RowSpan= 2, Color= "#3333FF" },
                 new CourtStructure(){ CourtId= 9, CourtName= "Handball Court 1", ParentCourtId= 13, ColSpan= 4, RowSpan= 1, Color= "#A0DC7F" },
             };
+           
             return Request.CreateResponse<List<CourtStructure>>(HttpStatusCode.OK, courts);
         }
         [HttpGet]
