@@ -136,7 +136,7 @@ namespace FixiGridUI.FixiGridComponents {
                 .selectAll('[data-role="header"] tr')
                 .selectAll('th')
                 .each(function (d, i, y) {
-                    if (y != 0) return;
+                    //if (y != 0) return;
 
                     var tick = content.select("g.axis-x").append("g")
                         .classed("tick", true)
