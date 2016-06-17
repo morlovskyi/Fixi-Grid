@@ -83,10 +83,10 @@ var FixiGridUI;
                 _this.refresh();
             };
             this.components.onGameChangeHandler = function (e, args) {
-                var court = _this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
+                //var court: FixiGridComponents.FixiCourtDB = this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
                 var promiseChange = null;
                 if (_this.config.event && _this.config.event.onChange)
-                    promiseChange = _this.config.event.onChange(args.data, court, args.from, args.to);
+                    promiseChange = _this.config.event.onChange(args.data, _this.components.header.originalCourts.filter(function (x) { return x.CourtId == args.courtId; })[0], args.from, args.to);
                 if (promiseChange)
                     promiseChange.then(function () {
                         _this.refresh();

@@ -15,6 +15,7 @@
         protected targetClass = "";
         protected shadowClass = "";
         protected dragged = false;
+        protected availableCourts: CourtMetrix[] = [];
         public disabled = false;
         public minGameTimeRange = 15;
         public isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean = null;
@@ -29,22 +30,37 @@
                 .on("dragend", this.dragEnd.bind(this));
         }
 
-        protected dragStart() {
+        protected dragStart(d: FixiCourtGame) {
             if (this.disabled) return;
 
             this.dragged = false;
             var gElement = $(event.srcElement).parent().get(0);
             var clone = $(gElement).clone()
-
+            this.availableCourts = [];
             this.target = d3.select(gElement).classed(this.targetClass, true);
             this.shadow = d3.select(clone.get(0)).classed(this.shadowClass, true);
             this.gameAria = this.shadow.select(".game-aria");
             this.gameAriaHeightOriginal = parseInt(this.gameAria.attr("height"));
             this.rect = d3.transform(this.shadow.attr("transform")).translate;
-
+            this.shadow.attr({ "data-court-id": d.courtId })
             this.dragStartPageX = (<any>event).pageX
             this.dragStartPageY = (<any>event).pageY;
             clone.appendTo($(gElement).parent());
+
+            this.availableCourts = [];
+            var courtsDict = this.courtDict();
+            var type = courtsDict[d.courtId].type;
+            for (var id in courtsDict) {
+                if (courtsDict[id].type == type)
+                    this.availableCourts.push(courtsDict[id])
+            }
+            this.availableCourts.sort((a, b) => {
+                if (a.position < b.position)
+                    return -1
+                if (a.position > b.position)
+                    return 1
+                return 0
+            })
         }
 
         private basedrag(d: FixiCourtGame) {
@@ -72,7 +88,12 @@
                 };
 
                 setTimeout(() => {
+                    d.courtId = parseInt(this.shadow.attr("data-court-id"));
+
                     var rect = this.getRect();
+                    this.target.select(".game-aria").attr({
+                        width: this.courtDict()[d.courtId].size,
+                    })
                     this.target.attr({
                         transform: "translate(" + rect.left + "," + rect.top + ")",
                         height: rect.height

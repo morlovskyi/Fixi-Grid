@@ -15,5 +15,7 @@ namespace Fixi_Grid.Models
         public int ColSpan { get; set; }
         public int RowSpan { get; set; }
         public string Color { get; set; }
+        public List<int> AllowedSports { get; internal set; }
+        public int Type { get; internal set; }
     }
 }

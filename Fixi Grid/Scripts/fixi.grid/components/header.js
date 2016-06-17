@@ -27,6 +27,7 @@ var FixiGridUI;
                         "data-id": function (d) { return d.CourtId; },
                         "colspan": function (d) { return d.ColSpan; },
                         "rowspan": function (d) { return d.RowSpan; },
+                        "type": function (d) { return d.Type; }
                     }).text(function (d) { return d.CourtName; });
                 };
                 this.options = args;
@@ -101,9 +102,9 @@ var FixiGridUI;
             };
             FixiGridHeader.prototype.convertUnitCellToCourt = function (game, unitCell) {
                 var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
-                var requiredColSpanCourts = this.countHeader.selectAll("[colspan='" + currentGameCourt.ColSpan + "']").data();
+                var requiredTypeCourts = this.countHeader.selectAll("[type='" + currentGameCourt.Type + "']").data();
                 var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
-                return requiredColSpanCourts[requiredIndex];
+                return requiredTypeCourts[requiredIndex];
             };
             return FixiGridHeader;
         }());

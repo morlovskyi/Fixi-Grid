@@ -18,22 +18,23 @@
             })
 
             this.content.dragValidation = (validateGame, rect) => {
-                var court = this.header.convertUnitCellToCourt(validateGame, this.header.scale.invert(rect.left))
+                //var court = this.header.convertUnitCellToCourt(validateGame, this.header.scale.invert(rect.left))
                 var from = this.content.scale.y.invert(rect.top + 5);
                 var to = this.content.scale.y.invert(rect.top + rect.height - 5);
-                if (!court)
-                    return false;
+                //if (!court)
+                //    return false;
 
-                var validateCourt = this.content.courtDict[court.CourtId]
+                var validateCourt = this.content.courtDict[validateGame.courtId]
 
                 var gamesByCourtPosition = this.content.games.filter(contentGame => {
                     if (validateGame == contentGame) return false;
 
                     var gameCourt = this.content.courtDict[contentGame.courtId];
 
-                    return validateCourt.position == gameCourt.position ||
-                        (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size)||
-                        (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                    //return validateCourt.position == gameCourt.position ||
+                    //    (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size)||
+                    //    (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                    return validateCourt.type == gameCourt.type
                 })
 
                 var gamesByTimeRange = gamesByCourtPosition.filter(contentGame => {

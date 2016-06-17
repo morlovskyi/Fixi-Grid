@@ -18,19 +18,20 @@ var FixiGridUI;
                     scaleY: this.timeLine.scale
                 });
                 this.content.dragValidation = function (validateGame, rect) {
-                    var court = _this.header.convertUnitCellToCourt(validateGame, _this.header.scale.invert(rect.left));
+                    //var court = this.header.convertUnitCellToCourt(validateGame, this.header.scale.invert(rect.left))
                     var from = _this.content.scale.y.invert(rect.top + 5);
                     var to = _this.content.scale.y.invert(rect.top + rect.height - 5);
-                    if (!court)
-                        return false;
-                    var validateCourt = _this.content.courtDict[court.CourtId];
+                    //if (!court)
+                    //    return false;
+                    var validateCourt = _this.content.courtDict[validateGame.courtId];
                     var gamesByCourtPosition = _this.content.games.filter(function (contentGame) {
                         if (validateGame == contentGame)
                             return false;
                         var gameCourt = _this.content.courtDict[contentGame.courtId];
-                        return validateCourt.position == gameCourt.position ||
-                            (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size) ||
-                            (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                        //return validateCourt.position == gameCourt.position ||
+                        //    (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size)||
+                        //    (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                        return validateCourt.type == gameCourt.type;
                     });
                     var gamesByTimeRange = gamesByCourtPosition.filter(function (contentGame) {
                         return (from <= contentGame.from && to >= contentGame.from) ||

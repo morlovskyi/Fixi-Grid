@@ -17,11 +17,12 @@ declare namespace FixiGridUI.FixiGridComponents.Behaviors {
         protected targetClass: string;
         protected shadowClass: string;
         protected dragged: boolean;
+        protected availableCourts: CourtMetrix[];
         disabled: boolean;
         minGameTimeRange: number;
         isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean;
         constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary);
-        protected dragStart(): void;
+        protected dragStart(d: FixiCourtGame): void;
         private basedrag(d);
         protected drag(d: FixiCourtGame): void;
         protected dragEnd(d: FixiCourtGame): void;
@@ -99,7 +100,7 @@ declare namespace FixiGridUI.FixiGridComponents {
     }
     interface GameChangeHandlerArgs {
         data: FixiCourtGame;
-        unitCell: number;
+        courtId: any;
         from: Date;
         to: Date;
     }
@@ -117,12 +118,15 @@ declare namespace FixiGridUI.FixiGridComponents {
         courtId: number;
     }
     interface CourtMetrixDictionary {
-        [id: number]: {
-            size: number;
-            position: number;
-            color: string;
-            court: FixiCourtDB;
-        };
+        [id: number]: CourtMetrix;
+    }
+    interface CourtMetrix {
+        size: number;
+        position: number;
+        color: string;
+        court: FixiCourtDB;
+        type: number;
+        id: number;
     }
 }
 declare namespace FixiGridUI.FixiGridComponents {
@@ -153,6 +157,7 @@ declare namespace FixiGridUI.FixiGridComponents {
         ParentCourtId: number;
         ColSpan: number;
         RowSpan: number;
+        Type: number;
         Color: string;
     }
 }

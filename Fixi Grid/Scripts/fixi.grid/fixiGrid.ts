@@ -74,10 +74,10 @@ namespace FixiGridUI {
                 this.refresh();
             }
             this.components.onGameChangeHandler = (e, args) => {
-                var court: FixiGridComponents.FixiCourtDB = this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
+                //var court: FixiGridComponents.FixiCourtDB = this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
                 var promiseChange: JQueryPromise<any> = null;
                 if (this.config.event && this.config.event.onChange)
-                    promiseChange = <JQueryPromise<any>>this.config.event.onChange(args.data, court, args.from, args.to)
+                    promiseChange = <JQueryPromise<any>>this.config.event.onChange(args.data, this.components.header.originalCourts.filter(x => x.CourtId == args.courtId)[0], args.from, args.to)
 
                 if (promiseChange)
                     promiseChange.then(() => {

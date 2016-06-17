@@ -15,6 +15,7 @@ var FixiGridUI;
                     this.targetClass = "";
                     this.shadowClass = "";
                     this.dragged = false;
+                    this.availableCourts = [];
                     this.disabled = false;
                     this.minGameTimeRange = 15;
                     this.isGamePositionValid = null;
@@ -26,20 +27,36 @@ var FixiGridUI;
                         .on("drag", this.basedrag.bind(this))
                         .on("dragend", this.dragEnd.bind(this));
                 }
-                BaseDragBehavior.prototype.dragStart = function () {
+                BaseDragBehavior.prototype.dragStart = function (d) {
                     if (this.disabled)
                         return;
                     this.dragged = false;
                     var gElement = $(event.srcElement).parent().get(0);
                     var clone = $(gElement).clone();
+                    this.availableCourts = [];
                     this.target = d3.select(gElement).classed(this.targetClass, true);
                     this.shadow = d3.select(clone.get(0)).classed(this.shadowClass, true);
                     this.gameAria = this.shadow.select(".game-aria");
                     this.gameAriaHeightOriginal = parseInt(this.gameAria.attr("height"));
                     this.rect = d3.transform(this.shadow.attr("transform")).translate;
+                    this.shadow.attr({ "data-court-id": d.courtId });
                     this.dragStartPageX = event.pageX;
                     this.dragStartPageY = event.pageY;
                     clone.appendTo($(gElement).parent());
+                    this.availableCourts = [];
+                    var courtsDict = this.courtDict();
+                    var type = courtsDict[d.courtId].type;
+                    for (var id in courtsDict) {
+                        if (courtsDict[id].type == type)
+                            this.availableCourts.push(courtsDict[id]);
+                    }
+                    this.availableCourts.sort(function (a, b) {
+                        if (a.position < b.position)
+                            return -1;
+                        if (a.position > b.position)
+                            return 1;
+                        return 0;
+                    });
                 };
                 BaseDragBehavior.prototype.basedrag = function (d) {
                     if (this.disabled)
@@ -63,7 +80,11 @@ var FixiGridUI;
                         }
                         ;
                         setTimeout(function () {
+                            d.courtId = parseInt(_this.shadow.attr("data-court-id"));
                             var rect = _this.getRect();
+                            _this.target.select(".game-aria").attr({
+                                width: _this.courtDict()[d.courtId].size,
+                            });
                             _this.target.attr({
                                 transform: "translate(" + rect.left + "," + rect.top + ")",
                                 height: rect.height
@@ -117,10 +138,39 @@ var FixiGridUI;
                     this.shadowClass = "shadow";
                 }
                 GameDragBehavior.prototype.drag = function (d) {
+                    var id = this.shadow.attr("data-court-id");
                     var tempX = event.pageX - this.dragStartPageX;
-                    var courtSize = this.courtDict()[d.courtId].size;
-                    var x = this.rect[0] + tempX + courtSize / 2;
-                    var left = x - x % courtSize;
+                    var d3event = d3.event;
+                    var courtSize = this.courtDict()[id].size;
+                    var courtPosition = this.courtDict()[id].position;
+                    var newCourt = null;
+                    this.availableCourts.forEach(function (x, i, array) {
+                        var tempCourt;
+                        if (x.id == id) {
+                            if (d3event.x < courtSize) {
+                                tempCourt = array[i - 1];
+                            }
+                            else {
+                                tempCourt = array[i + 1];
+                            }
+                        }
+                        if (!tempCourt || tempCourt.position == courtPosition)
+                            return;
+                        newCourt = tempCourt;
+                    });
+                    var left;
+                    if (!newCourt) {
+                        left = d3.transform(this.shadow.attr("transform")).translate[0];
+                    }
+                    else {
+                        left = newCourt.position;
+                        this.shadow.attr({
+                            "data-court-id": newCourt.id
+                        });
+                        this.shadow.select(".game-aria").attr({
+                            width: newCourt.size,
+                        });
+                    }
                     var tempY = event.pageY - this.dragStartPageY;
                     var y = this.scaleY.invert(this.rect[1] + tempY);
                     var axisRowValue = this.axisX.ticks()[1];
@@ -128,7 +178,7 @@ var FixiGridUI;
                     var top = this.scaleY(y);
                     if (left < 0 || top < 0)
                         return;
-                    this.shadow.transition().duration(this.animatinoDuration).ease("sin-out").attr({
+                    this.shadow.attr({
                         transform: "translate(" + left + "," + top + ")"
                     });
                     this.dragged = true;
@@ -401,7 +451,7 @@ var FixiGridUI;
                 $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", function (e, xy, target, data) {
                     $(_this).trigger("ongamechange", {
                         data: data,
-                        unitCell: _this.scale.x.invert(xy.left),
+                        courtId: data.courtId,
                         from: _this.calibrateDate(_this.scale.y.invert(xy.top)),
                         to: _this.calibrateDate(_this.scale.y.invert(xy.top + xy.height))
                     });
@@ -478,10 +528,12 @@ var FixiGridUI;
                     for (var j = 0, jlength = type.length; j < jlength; j++) {
                         var court = type[j];
                         this.courtDict[court.CourtId] = {
+                            id: court.CourtId,
                             color: court.Color,
-                            position: this.scale.x(court.ColSpan) * j,
-                            size: this.scale.x(court.ColSpan),
-                            court: court
+                            position: $("[data-id='" + court.CourtId + "']").get(0).offsetLeft,
+                            size: $("[data-id='" + court.CourtId + "']").get(0).offsetWidth,
+                            court: court,
+                            type: court.Type
                         };
                     }
                 }
@@ -548,6 +600,7 @@ var FixiGridUI;
                         "data-id": function (d) { return d.CourtId; },
                         "colspan": function (d) { return d.ColSpan; },
                         "rowspan": function (d) { return d.RowSpan; },
+                        "type": function (d) { return d.Type; }
                     }).text(function (d) { return d.CourtName; });
                 };
                 this.options = args;
@@ -621,9 +674,9 @@ var FixiGridUI;
             };
             FixiGridHeader.prototype.convertUnitCellToCourt = function (game, unitCell) {
                 var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
-                var requiredColSpanCourts = this.countHeader.selectAll("[colspan='" + currentGameCourt.ColSpan + "']").data();
+                var requiredTypeCourts = this.countHeader.selectAll("[type='" + currentGameCourt.Type + "']").data();
                 var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
-                return requiredColSpanCourts[requiredIndex];
+                return requiredTypeCourts[requiredIndex];
             };
             return FixiGridHeader;
         }());
@@ -729,19 +782,14 @@ var FixiGridUI;
                     scaleY: this.timeLine.scale
                 });
                 this.content.dragValidation = function (validateGame, rect) {
-                    var court = _this.header.convertUnitCellToCourt(validateGame, _this.header.scale.invert(rect.left));
                     var from = _this.content.scale.y.invert(rect.top + 5);
                     var to = _this.content.scale.y.invert(rect.top + rect.height - 5);
-                    if (!court)
-                        return false;
-                    var validateCourt = _this.content.courtDict[court.CourtId];
+                    var validateCourt = _this.content.courtDict[validateGame.courtId];
                     var gamesByCourtPosition = _this.content.games.filter(function (contentGame) {
                         if (validateGame == contentGame)
                             return false;
                         var gameCourt = _this.content.courtDict[contentGame.courtId];
-                        return validateCourt.position == gameCourt.position ||
-                            (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size) ||
-                            (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                        return validateCourt.type == gameCourt.type;
                     });
                     var gamesByTimeRange = gamesByCourtPosition.filter(function (contentGame) {
                         return (from <= contentGame.from && to >= contentGame.from) ||
@@ -930,10 +978,9 @@ var FixiGridUI;
                 _this.refresh();
             };
             this.components.onGameChangeHandler = function (e, args) {
-                var court = _this.components.header.convertUnitCellToCourt(args.data, args.unitCell);
                 var promiseChange = null;
                 if (_this.config.event && _this.config.event.onChange)
-                    promiseChange = _this.config.event.onChange(args.data, court, args.from, args.to);
+                    promiseChange = _this.config.event.onChange(args.data, _this.components.header.originalCourts.filter(function (x) { return x.CourtId == args.courtId; })[0], args.from, args.to);
                 if (promiseChange)
                     promiseChange.then(function () {
                         _this.refresh();

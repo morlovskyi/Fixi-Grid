@@ -189,13 +189,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TypeLite.Net4.d.ts</LastGenOutput>
     </Content>
-    <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Web.config" />
@@ -206,6 +199,13 @@
     <Content Include="Scripts\jquery-2.1.4.min.map" />
     <Content Include="tsconfig.json" />
     <Content Include="Scripts\Manager.ttinclude" />
+    <Content Include="Web.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\build\fixi.grid.d.ts" />

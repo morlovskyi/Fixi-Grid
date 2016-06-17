@@ -82,13 +82,19 @@ namespace FixiGridUI.FixiGridComponents {
             )
 
             $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", (e: Event, xy: { top: number, left: number, width: number, height: number }, target: d3.Selection<FixiCourtGame>, data: FixiCourtGame) => {
+                //var courtPosition = this.scale.x.invert(xy.left);
+                //for (var id in this.courtDict) {
+                    //if (this.courtDict[id].position == courtPosition) {
+                        $(this).trigger("ongamechange", <GameChangeHandlerArgs>{
+                            data: data,
+                            courtId: data.courtId,
+                            from: this.calibrateDate(this.scale.y.invert(xy.top)),
+                            to: this.calibrateDate(this.scale.y.invert(xy.top + xy.height))
+                        })
+                        //return;
+                    //}
+                //}
 
-                $(this).trigger("ongamechange", <GameChangeHandlerArgs>{
-                    data: data,
-                    unitCell: this.scale.x.invert(xy.left),
-                    from: this.calibrateDate(this.scale.y.invert(xy.top)),
-                    to: this.calibrateDate(this.scale.y.invert(xy.top + xy.height))
-                })
             })
 
             this.gridRender();
@@ -117,10 +123,12 @@ namespace FixiGridUI.FixiGridComponents {
                 for (var j = 0, jlength = type.length; j < jlength; j++) {
                     var court = type[j];
                     this.courtDict[court.CourtId] = {
+                        id: court.CourtId,
                         color: court.Color,
-                        position: this.scale.x(court.ColSpan) * j,
-                        size: this.scale.x(court.ColSpan),
-                        court: court
+                        position: $("[data-id='" + court.CourtId + "']").get(0).offsetLeft,//this.scale.x(court.ColSpan) * j,
+                        size: $("[data-id='" + court.CourtId + "']").get(0).offsetWidth,//this.scale.x(court.ColSpan),
+                        court: court,
+                        type: court.Type
                     }
                 }
             }
@@ -170,7 +178,7 @@ namespace FixiGridUI.FixiGridComponents {
     }
     export interface GameChangeHandlerArgs {
         data: FixiCourtGame
-        unitCell: number
+        courtId: any
         from: Date
         to: Date
     }
@@ -188,5 +196,6 @@ namespace FixiGridUI.FixiGridComponents {
         to: Date
         courtId: number
     }
-    export interface CourtMetrixDictionary { [id: number]: { size: number, position: number, color: string, court: FixiCourtDB } }
+    export interface CourtMetrixDictionary { [id: number]: CourtMetrix }
+    export interface CourtMetrix { size: number, position: number, color: string, court: FixiCourtDB, type: number, id: number }
 }

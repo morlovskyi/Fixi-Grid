@@ -89,16 +89,17 @@ namespace FixiGridUI.FixiGridComponents {
                     "data-id": (d) => { return d.CourtId },
                     "colspan": (d) => { return d.ColSpan },
                     "rowspan": (d) => { return d.RowSpan },
+                    "type": (d) => d.Type
                 }).text((d) => { return d.CourtName })
 
         }
-   
+
         public convertUnitCellToCourt(game: FixiCourtGame, unitCell: number): FixiCourtDB {
             var currentGameCourt = this.countHeader.select("[data-id='" + game.courtId + "']").data()[0];
-            var requiredColSpanCourts = this.countHeader.selectAll("[colspan='" + currentGameCourt.ColSpan + "']").data();
+            var requiredTypeCourts = this.countHeader.selectAll("[type='" + currentGameCourt.Type + "']").data();
             var requiredIndex = parseInt((unitCell / currentGameCourt.ColSpan).toFixed(0));
 
-            return requiredColSpanCourts[requiredIndex];
+            return requiredTypeCourts[requiredIndex];
         }
     }
     export interface FixiGridHeaderArgs {
@@ -110,6 +111,7 @@ namespace FixiGridUI.FixiGridComponents {
         ParentCourtId: number
         ColSpan: number
         RowSpan: number
+        Type: number,
         Color: string
     }
 }

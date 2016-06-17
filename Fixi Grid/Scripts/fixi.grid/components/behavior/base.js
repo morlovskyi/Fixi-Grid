@@ -10,6 +10,7 @@ var FixiGridUI;
                     this.targetClass = "";
                     this.shadowClass = "";
                     this.dragged = false;
+                    this.availableCourts = [];
                     this.disabled = false;
                     this.minGameTimeRange = 15;
                     this.isGamePositionValid = null;
@@ -21,20 +22,36 @@ var FixiGridUI;
                         .on("drag", this.basedrag.bind(this))
                         .on("dragend", this.dragEnd.bind(this));
                 }
-                BaseDragBehavior.prototype.dragStart = function () {
+                BaseDragBehavior.prototype.dragStart = function (d) {
                     if (this.disabled)
                         return;
                     this.dragged = false;
                     var gElement = $(event.srcElement).parent().get(0);
                     var clone = $(gElement).clone();
+                    this.availableCourts = [];
                     this.target = d3.select(gElement).classed(this.targetClass, true);
                     this.shadow = d3.select(clone.get(0)).classed(this.shadowClass, true);
                     this.gameAria = this.shadow.select(".game-aria");
                     this.gameAriaHeightOriginal = parseInt(this.gameAria.attr("height"));
                     this.rect = d3.transform(this.shadow.attr("transform")).translate;
+                    this.shadow.attr({ "data-court-id": d.courtId });
                     this.dragStartPageX = event.pageX;
                     this.dragStartPageY = event.pageY;
                     clone.appendTo($(gElement).parent());
+                    this.availableCourts = [];
+                    var courtsDict = this.courtDict();
+                    var type = courtsDict[d.courtId].type;
+                    for (var id in courtsDict) {
+                        if (courtsDict[id].type == type)
+                            this.availableCourts.push(courtsDict[id]);
+                    }
+                    this.availableCourts.sort(function (a, b) {
+                        if (a.position < b.position)
+                            return -1;
+                        if (a.position > b.position)
+                            return 1;
+                        return 0;
+                    });
                 };
                 BaseDragBehavior.prototype.basedrag = function (d) {
                     if (this.disabled)
@@ -58,7 +75,11 @@ var FixiGridUI;
                         }
                         ;
                         setTimeout(function () {
+                            d.courtId = parseInt(_this.shadow.attr("data-court-id"));
                             var rect = _this.getRect();
+                            _this.target.select(".game-aria").attr({
+                                width: _this.courtDict()[d.courtId].size,
+                            });
                             _this.target.attr({
                                 transform: "translate(" + rect.left + "," + rect.top + ")",
                                 height: rect.height

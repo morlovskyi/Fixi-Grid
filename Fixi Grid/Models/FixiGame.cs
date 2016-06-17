@@ -15,6 +15,7 @@ namespace Fixi_Grid.Models
         public DateTime To { get; set; }
         public int CourtId { get; set; }
         public string Division { get; set; }
+        public int SportID { get; internal set; }
     }
 }
 

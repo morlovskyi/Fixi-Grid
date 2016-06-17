@@ -37,12 +37,18 @@ var FixiGridUI;
                     });
                 });
                 $([this.gameDragBehavior, this.gameResizeTopBehavior, this.gameResizeDownBehavior]).on("change", function (e, xy, target, data) {
+                    //var courtPosition = this.scale.x.invert(xy.left);
+                    //for (var id in this.courtDict) {
+                    //if (this.courtDict[id].position == courtPosition) {
                     $(_this).trigger("ongamechange", {
                         data: data,
-                        unitCell: _this.scale.x.invert(xy.left),
+                        courtId: data.courtId,
                         from: _this.calibrateDate(_this.scale.y.invert(xy.top)),
                         to: _this.calibrateDate(_this.scale.y.invert(xy.top + xy.height))
                     });
+                    //return;
+                    //}
+                    //}
                 });
                 this.gridRender();
             }
@@ -116,10 +122,12 @@ var FixiGridUI;
                     for (var j = 0, jlength = type.length; j < jlength; j++) {
                         var court = type[j];
                         this.courtDict[court.CourtId] = {
+                            id: court.CourtId,
                             color: court.Color,
-                            position: this.scale.x(court.ColSpan) * j,
-                            size: this.scale.x(court.ColSpan),
-                            court: court
+                            position: $("[data-id='" + court.CourtId + "']").get(0).offsetLeft,
+                            size: $("[data-id='" + court.CourtId + "']").get(0).offsetWidth,
+                            court: court,
+                            type: court.Type
                         };
                     }
                 }
