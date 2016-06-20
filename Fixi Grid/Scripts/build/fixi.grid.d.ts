@@ -27,7 +27,7 @@ declare namespace FixiGridUI.FixiGridComponents.Behaviors {
         protected dragEnd(d: FixiCourtGame): void;
         protected isNewHeightValidByLimit(newHeight: number): boolean;
         validate(game: FixiCourtGame, dragResult: Rect, courtId: number): boolean;
-        getCourtInPoint(x: any): CourtMetrix[];
+        getCourtInPoint(x: any, type: any): any;
     }
     interface Rect {
         left: number;

@@ -43,8 +43,8 @@
                         (from >= contentGame.from && to <= contentGame.to)
                 })
 
-                
-                return gamesByTimeRange.length == 0;
+
+                return gamesByTimeRange.length == 0 && validateCourt.type == this.content.courtDict[validateGame.courtId].type;
             }
         }
 

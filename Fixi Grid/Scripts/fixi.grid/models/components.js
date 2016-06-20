@@ -17,13 +17,13 @@ var FixiGridUI;
                     scaleX: this.header.scale,
                     scaleY: this.timeLine.scale
                 });
-                this.content.dragValidation = function (validateGame, rect) {
+                this.content.dragValidation = function (validateGame, rect, courtId) {
                     //var court = this.header.convertUnitCellToCourt(validateGame, this.header.scale.invert(rect.left))
                     var from = _this.content.scale.y.invert(rect.top + 5);
                     var to = _this.content.scale.y.invert(rect.top + rect.height - 5);
                     //if (!court)
                     //    return false;
-                    var validateCourt = _this.content.courtDict[validateGame.courtId];
+                    var validateCourt = _this.content.courtDict[courtId];
                     var gamesByCourtPosition = _this.content.games.filter(function (contentGame) {
                         if (validateGame == contentGame)
                             return false;
@@ -38,7 +38,7 @@ var FixiGridUI;
                             (from <= contentGame.to && to >= contentGame.to) ||
                             (from >= contentGame.from && to <= contentGame.to);
                     });
-                    return gamesByTimeRange.length == 0;
+                    return gamesByTimeRange.length == 0 && validateCourt.type == _this.content.courtDict[validateGame.courtId].type;
                 };
             }
             Object.defineProperty(Components.prototype, "onGameClickHandler", {

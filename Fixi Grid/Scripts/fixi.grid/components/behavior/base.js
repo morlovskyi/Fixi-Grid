@@ -85,7 +85,7 @@ var FixiGridUI;
                         return;
                     this.mouseMoveInfo.move(event);
                     this.drag(d);
-                    var court = this.getCourtInPoint(this.dragResult.left + 10)[0];
+                    var court = this.getCourtInPoint(this.dragResult.left + 10, this.courtDict()[d.courtId].type);
                     this.shadow.classed("invalid", !this.validate(d, this.dragResult, court.id));
                 };
                 BaseDragBehavior.prototype.drag = function (d) {
@@ -94,7 +94,7 @@ var FixiGridUI;
                     if (this.disabled)
                         return;
                     var rect = this.dragResult;
-                    var court = this.getCourtInPoint(rect.left + 10)[0];
+                    var court = this.getCourtInPoint(rect.left + 10, this.courtDict()[d.courtId].type);
                     if (!this.dragged && rect.top == this.targetRect.top && this.targetRect.left == rect.left) {
                         $(this).trigger("edit", d);
                     }
@@ -122,10 +122,26 @@ var FixiGridUI;
                         return this.isGamePositionValid(game, dragResult, courtId);
                     return true;
                 };
-                BaseDragBehavior.prototype.getCourtInPoint = function (x) {
-                    return this.availableCourts.filter(function (c) {
-                        return c.position <= x && x < c.position + c.size;
-                    });
+                BaseDragBehavior.prototype.getCourtInPoint = function (x, type) {
+                    var courtsDict = this.courtDict();
+                    var distance = 100000;
+                    var result = null;
+                    for (var id in courtsDict) {
+                        var c = courtsDict[id];
+                        if (c.position <= x && x < c.position + c.size) {
+                            if (x - c.position < distance) {
+                                result = c;
+                                distance = x - c.position;
+                            }
+                            if (x - c.position == distance && c.type == type) {
+                                result = c;
+                            }
+                        }
+                    }
+                    return result;
+                    //return this.availableCourts.filter(c => {
+                    //    return c.position <= x && x < c.position + c.size;
+                    //})
                 };
                 return BaseDragBehavior;
             }());

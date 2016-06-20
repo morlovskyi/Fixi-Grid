@@ -54,4 +54,4 @@ var FixiGridUI;
         Models.UIMarkup = UIMarkup;
     })(Models = FixiGridUI.Models || (FixiGridUI.Models = {}));
 })(FixiGridUI || (FixiGridUI = {}));
-//# sourceMappingURL=uiMarkup.js.map
+//# sourceMappingURL=uimarkup.js.map

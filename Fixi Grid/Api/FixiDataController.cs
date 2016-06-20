@@ -29,6 +29,8 @@ namespace Fixi_Grid.Api
             //    new CourtStructure(){ CourtId= 14, CourtName= "Football Court 2", ParentCourtId= 0, ColSpan= 4, RowSpan= 1, Color= "white" }
             //};
             var courts = new List<CourtStructure>() {
+
+                new CourtStructure(){ Type=2, CourtId= 11, CourtName= "Sub Court 0", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ Type=1, CourtId= 1, CourtName= "Tennis Court 1", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" , AllowedSports = new List<int> {10, 12} },
                 new CourtStructure(){ Type=1, CourtId= 2, CourtName= "Tennis Court 2", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ Type=1, CourtId= 3, CourtName= "Tennis Court 3", ParentCourtId= 9, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
@@ -37,7 +39,7 @@ namespace Fixi_Grid.Api
                 new CourtStructure(){ Type=2, CourtId= 6, CourtName= "Sub Court 1", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ Type=2, CourtId= 7, CourtName= "Sub Court 2", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ Type=2, CourtId= 8, CourtName= "Sub Court 3", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
-                new CourtStructure(){ Type=3, CourtId= 9, CourtName= "Football Court 1", ParentCourtId= 0, ColSpan= 5, RowSpan= 1, Color= "#A0DC7F" },
+                new CourtStructure(){ Type=3, CourtId= 9, CourtName= "Football Court 1", ParentCourtId= 0, ColSpan= 6, RowSpan= 1, Color= "#A0DC7F" },
                 new CourtStructure(){ Type=3, CourtId=10, CourtName= "Football Court 1", ParentCourtId= 0, ColSpan= 3, RowSpan= 1, Color= "#A0DC7F" },
             };
 
