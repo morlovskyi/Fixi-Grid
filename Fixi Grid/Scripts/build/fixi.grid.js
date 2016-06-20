@@ -27,21 +27,41 @@ var FixiGridUI;
                         .on("drag", this.basedrag.bind(this))
                         .on("dragend", this.dragEnd.bind(this));
                 }
+                Object.defineProperty(BaseDragBehavior.prototype, "targetRect", {
+                    get: function () {
+                        return {
+                            left: this.snapY(d3.transform(this.target.attr("transform")).translate[0]),
+                            top: this.snapY(d3.transform(this.target.attr("transform")).translate[1]),
+                            width: parseFloat(this.target.select("rect.game-aria").attr("width")),
+                            height: parseFloat(this.target.select("rect.game-aria").attr("height"))
+                        };
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(BaseDragBehavior.prototype, "dragResult", {
+                    get: function () {
+                        return {
+                            left: this.snapY(d3.transform(this.shadow.attr("transform")).translate[0]),
+                            top: this.snapY(d3.transform(this.shadow.attr("transform")).translate[1]),
+                            width: parseFloat(this.shadow.select("rect.game-aria").attr("width")),
+                            height: parseFloat(this.shadow.select("rect.game-aria").attr("height"))
+                        };
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 BaseDragBehavior.prototype.dragStart = function (d) {
                     if (this.disabled)
                         return;
+                    this.mouseMoveInfo = new Behaviors.MouseMoveInfo(event);
                     this.dragged = false;
                     var gElement = $(event.srcElement).parent().get(0);
                     var clone = $(gElement).clone();
                     this.availableCourts = [];
                     this.target = d3.select(gElement).classed(this.targetClass, true);
                     this.shadow = d3.select(clone.get(0)).classed(this.shadowClass, true);
-                    this.gameAria = this.shadow.select(".game-aria");
-                    this.gameAriaHeightOriginal = parseInt(this.gameAria.attr("height"));
-                    this.rect = d3.transform(this.shadow.attr("transform")).translate;
                     this.shadow.attr({ "data-court-id": d.courtId });
-                    this.dragStartPageX = event.pageX;
-                    this.dragStartPageY = event.pageY;
                     clone.appendTo($(gElement).parent());
                     this.availableCourts = [];
                     var courtsDict = this.courtDict();
@@ -58,65 +78,59 @@ var FixiGridUI;
                         return 0;
                     });
                 };
+                BaseDragBehavior.prototype.snapY = function (y) {
+                    var startDate = new Date(this.scaleY.domain()[0].getTime());
+                    var axisRowValue = this.axisX.ticks()[1];
+                    startDate.setMinutes(startDate.getMinutes() + axisRowValue);
+                    var width = this.scaleY(startDate);
+                    return y - (y % width) + Math.round((y % width) / width) * width;
+                };
                 BaseDragBehavior.prototype.basedrag = function (d) {
                     if (this.disabled)
                         return;
+                    this.mouseMoveInfo.move(event);
                     this.drag(d);
-                    this.shadow.classed("invalid", !this.validate(d));
+                    var court = this.getCourtInPoint(this.dragResult.left + 10)[0];
+                    this.shadow.classed("invalid", !this.validate(d, this.dragResult, court.id));
                 };
                 BaseDragBehavior.prototype.drag = function (d) {
                 };
                 BaseDragBehavior.prototype.dragEnd = function (d) {
-                    var _this = this;
                     if (this.disabled)
                         return;
-                    if (this.dragged == false) {
-                        this.resetShadow();
+                    var rect = this.dragResult;
+                    var court = this.getCourtInPoint(rect.left + 10)[0];
+                    if (!this.dragged && rect.top == this.targetRect.top && this.targetRect.left == rect.left) {
                         $(this).trigger("edit", d);
                     }
-                    else {
-                        if (!this.validate(d)) {
-                            return this.resetShadow();
-                        }
-                        ;
-                        setTimeout(function () {
-                            d.courtId = parseInt(_this.shadow.attr("data-court-id"));
-                            var rect = _this.getRect();
-                            _this.target.select(".game-aria").attr({
-                                width: _this.courtDict()[d.courtId].size,
-                            });
-                            _this.target.attr({
-                                transform: "translate(" + rect.left + "," + rect.top + ")",
-                                height: rect.height
-                            });
-                            _this.resetShadow();
-                            $(_this).trigger("change", [_this.getRect(), _this.target, d]);
-                        }, this.animatinoDuration);
+                    else if (this.validate(d, rect, court.id)) {
+                        d.courtId = court.id;
+                        this.target.select(".game-aria").attr({
+                            width: this.courtDict()[d.courtId].size,
+                        });
+                        this.target.attr({
+                            transform: "translate(" + rect.left + "," + rect.top + ")",
+                            height: rect.height
+                        });
+                        $(this).trigger("change", [rect, this.target, d]);
                     }
+                    this.target.classed(this.targetClass, false);
+                    this.shadow.remove();
                 };
                 BaseDragBehavior.prototype.isNewHeightValidByLimit = function (newHeight) {
                     var fromDate = this.scaleY.invert(newHeight);
                     var startDate = this.scaleY.domain()[0];
                     return parseInt(((fromDate.getTime() - startDate.getTime()) / 1000 / 60).toString()) >= this.minGameTimeRange;
                 };
-                BaseDragBehavior.prototype.resetShadow = function () {
-                    this.target.classed(this.targetClass, false);
-                    this.shadow.remove();
-                };
-                BaseDragBehavior.prototype.validate = function (game) {
+                BaseDragBehavior.prototype.validate = function (game, dragResult, courtId) {
                     if (this.isGamePositionValid)
-                        return this.isGamePositionValid(game, this.getRect());
+                        return this.isGamePositionValid(game, dragResult, courtId);
                     return true;
                 };
-                BaseDragBehavior.prototype.getRect = function () {
-                    var translate = d3.transform(this.shadow.attr("transform")).translate;
-                    var result = {
-                        left: translate[0],
-                        top: translate[1],
-                        width: parseFloat(this.shadow.select("rect.game-aria").attr("width")),
-                        height: parseFloat(this.shadow.select("rect.game-aria").attr("height"))
-                    };
-                    return result;
+                BaseDragBehavior.prototype.getCourtInPoint = function (x) {
+                    return this.availableCourts.filter(function (c) {
+                        return c.position <= x && x < c.position + c.size;
+                    });
                 };
                 return BaseDragBehavior;
             }());
@@ -139,47 +153,20 @@ var FixiGridUI;
                 }
                 GameDragBehavior.prototype.drag = function (d) {
                     var id = this.shadow.attr("data-court-id");
-                    var tempX = event.pageX - this.dragStartPageX;
-                    var d3event = d3.event;
-                    var courtSize = this.courtDict()[id].size;
-                    var courtPosition = this.courtDict()[id].position;
-                    var newCourt = null;
-                    this.availableCourts.forEach(function (x, i, array) {
-                        var tempCourt;
-                        if (x.id == id) {
-                            if (d3event.x < courtSize) {
-                                tempCourt = array[i - 1];
-                            }
-                            else {
-                                tempCourt = array[i + 1];
-                            }
-                        }
-                        if (!tempCourt || tempCourt.position == courtPosition)
-                            return;
-                        newCourt = tempCourt;
-                    });
-                    var left;
-                    if (!newCourt) {
-                        left = d3.transform(this.shadow.attr("transform")).translate[0];
-                    }
-                    else {
-                        left = newCourt.position;
-                        this.shadow.attr({
-                            "data-court-id": newCourt.id
-                        });
-                        this.shadow.select(".game-aria").attr({
-                            width: newCourt.size,
-                        });
-                    }
-                    var tempY = event.pageY - this.dragStartPageY;
-                    var y = this.scaleY.invert(this.rect[1] + tempY);
-                    var axisRowValue = this.axisX.ticks()[1];
-                    y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
-                    var top = this.scaleY(y);
+                    var court = this.courtDict()[id];
+                    var shadowXY = d3.transform(this.shadow.attr("transform")).translate;
+                    var initialXY = d3.transform(this.target.attr("transform")).translate;
+                    var changeCourt = this.getCourtInPoint(event.layerX - 45)[0];
+                    var left = (changeCourt) ? changeCourt.position : shadowXY[0];
+                    var width = (changeCourt) ? changeCourt.size : this.shadow.select(".game-aria").attr("width");
+                    var top = this.snapY(initialXY[1] + this.mouseMoveInfo.offsetY);
                     if (left < 0 || top < 0)
                         return;
                     this.shadow.attr({
                         transform: "translate(" + left + "," + top + ")"
+                    });
+                    this.shadow.select(".game-aria").attr({
+                        width: width
                     });
                     this.dragged = true;
                 };
@@ -203,22 +190,17 @@ var FixiGridUI;
                     this.shadowClass = "resize-shadow";
                 }
                 GameResizeDownBehavior.prototype.drag = function (d) {
-                    this.calculateNewHeight();
-                    if (this.newGameHeight < 0)
+                    var initialXY = d3.transform(this.target.attr("transform")).translate;
+                    var initialGameHeight = parseInt(this.target.select(".game-aria").attr("height"));
+                    var height = this.snapY(initialGameHeight + this.mouseMoveInfo.offsetY);
+                    if (height < 0)
                         return;
-                    if (!this.isNewHeightValidByLimit(this.newGameHeight))
+                    if (!this.isNewHeightValidByLimit(height))
                         return;
-                    this.gameAria.attr({
-                        height: this.newGameHeight
+                    this.shadow.select(".game-aria").attr({
+                        height: height
                     });
                     this.dragged = true;
-                };
-                GameResizeDownBehavior.prototype.calculateNewHeight = function () {
-                    var point = event.pageY - this.dragStartPageY;
-                    var newDate = this.scaleY.invert(point);
-                    var axisRowValue = this.axisX.ticks()[1];
-                    newDate.setMinutes(newDate.getMinutes() - (newDate.getMinutes() % axisRowValue), 0);
-                    this.newGameHeight = this.gameAriaHeightOriginal + this.scaleY(newDate);
                 };
                 return GameResizeDownBehavior;
             }(Behaviors.BaseDragBehavior));
@@ -239,28 +221,72 @@ var FixiGridUI;
                     this.shadowClass = "resize-shadow";
                 }
                 GameResizeTopBehavior.prototype.drag = function (d) {
-                    var tempY = event.pageY - this.dragStartPageY;
-                    var y = this.scaleY.invert(this.rect[1] + tempY);
-                    var axisRowValue = this.axisX.ticks()[1];
-                    y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
-                    var top = this.scaleY(y);
-                    if (top < 0 && this.rect[1] - top > 0)
+                    var initialXY = d3.transform(this.target.attr("transform")).translate;
+                    var initialGameHeight = parseInt(this.target.select(".game-aria").attr("height"));
+                    var top = this.snapY(initialXY[1] + this.mouseMoveInfo.offsetY);
+                    var height = this.snapY(initialGameHeight + (initialXY[1] - top));
+                    if (!this.isNewHeightValidByLimit(height))
                         return;
-                    var newHeight = this.gameAriaHeightOriginal + (this.rect[1] - top);
-                    if (!this.isNewHeightValidByLimit(newHeight))
-                        return;
-                    console.log(newHeight);
                     this.shadow.attr({
-                        transform: "translate(" + this.rect[0] + "," + top + ")"
+                        transform: "translate(" + initialXY[0] + "," + top + ")"
                     });
-                    this.gameAria.attr({
-                        height: newHeight
+                    this.shadow.select(".game-aria").attr({
+                        height: height
                     });
                     this.dragged = true;
                 };
                 return GameResizeTopBehavior;
             }(Behaviors.BaseDragBehavior));
             Behaviors.GameResizeTopBehavior = GameResizeTopBehavior;
+        })(Behaviors = FixiGridComponents.Behaviors || (FixiGridComponents.Behaviors = {}));
+    })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
+})(FixiGridUI || (FixiGridUI = {}));
+var FixiGridUI;
+(function (FixiGridUI) {
+    var FixiGridComponents;
+    (function (FixiGridComponents) {
+        var Behaviors;
+        (function (Behaviors) {
+            var MouseMoveInfo = (function () {
+                function MouseMoveInfo(startEvent) {
+                    var _this = this;
+                    this.startEvent = startEvent;
+                    this.pageX = 0;
+                    this.pageY = 0;
+                    this.movementX = 0;
+                    this.movementY = 0;
+                    this.moveEvent = null;
+                    this.move = function (moveEvent) {
+                        _this.moveEvent = moveEvent;
+                        _this.movementX = _this.moveEvent.pageX - _this.pageX;
+                        _this.movementY = _this.moveEvent.pageY - _this.pageY;
+                        _this.pageX = _this.moveEvent.pageX;
+                        _this.pageY = _this.moveEvent.pageY;
+                    };
+                    this.pageX = startEvent.pageX;
+                    this.pageY = startEvent.pageY;
+                }
+                Object.defineProperty(MouseMoveInfo.prototype, "offsetX", {
+                    get: function () {
+                        if (!this.moveEvent)
+                            return 0;
+                        return this.moveEvent.pageX - this.startEvent.pageX;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(MouseMoveInfo.prototype, "offsetY", {
+                    get: function () {
+                        if (!this.moveEvent)
+                            return 0;
+                        return this.moveEvent.pageY - this.startEvent.pageY;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                return MouseMoveInfo;
+            }());
+            Behaviors.MouseMoveInfo = MouseMoveInfo;
         })(Behaviors = FixiGridComponents.Behaviors || (FixiGridComponents.Behaviors = {}));
     })(FixiGridComponents = FixiGridUI.FixiGridComponents || (FixiGridUI.FixiGridComponents = {}));
 })(FixiGridUI || (FixiGridUI = {}));
@@ -781,15 +807,17 @@ var FixiGridUI;
                     scaleX: this.header.scale,
                     scaleY: this.timeLine.scale
                 });
-                this.content.dragValidation = function (validateGame, rect) {
+                this.content.dragValidation = function (validateGame, rect, courtId) {
                     var from = _this.content.scale.y.invert(rect.top + 5);
                     var to = _this.content.scale.y.invert(rect.top + rect.height - 5);
-                    var validateCourt = _this.content.courtDict[validateGame.courtId];
+                    var validateCourt = _this.content.courtDict[courtId];
                     var gamesByCourtPosition = _this.content.games.filter(function (contentGame) {
                         if (validateGame == contentGame)
                             return false;
                         var gameCourt = _this.content.courtDict[contentGame.courtId];
-                        return validateCourt.type == gameCourt.type;
+                        return validateCourt.position == gameCourt.position ||
+                            (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size) ||
+                            (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
                     });
                     var gamesByTimeRange = gamesByCourtPosition.filter(function (contentGame) {
                         return (from <= contentGame.from && to >= contentGame.from) ||

@@ -50,7 +50,7 @@ namespace FixiGridUI.FixiGridComponents {
             x: d3.svg.axis(),
             y: d3.svg.axis()
         }
-        set dragValidation(validation: (game: FixiCourtGame, rect: Behaviors.Rect) => boolean) {
+        set dragValidation(validation: (game: FixiCourtGame, rect: Behaviors.Rect, courtId: number) => boolean) {
             this.gameDragBehavior.isGamePositionValid = validation;
             this.gameResizeTopBehavior.isGamePositionValid = validation;
             this.gameResizeDownBehavior.isGamePositionValid = validation;

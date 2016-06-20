@@ -3,33 +3,31 @@
 declare namespace FixiGridUI.FixiGridComponents.Behaviors {
     class BaseDragBehavior {
         behavior: d3.behavior.Drag<FixiCourtGame>;
+        mouseMoveInfo: MouseMoveInfo;
         protected target: d3.Selection<FixiCourtGame>;
         protected shadow: d3.Selection<FixiCourtGame>;
-        protected rect: [number, number];
         protected animatinoDuration: number;
-        protected dragStartPageX: number;
-        protected dragStartPageY: number;
         protected axisX: d3.svg.Axis;
         protected scaleY: d3.time.Scale<number, number>;
         protected courtDict: () => CourtMetrixDictionary;
-        protected gameAria: d3.Selection<any>;
-        protected gameAriaHeightOriginal: number;
         protected targetClass: string;
         protected shadowClass: string;
         protected dragged: boolean;
         protected availableCourts: CourtMetrix[];
         disabled: boolean;
         minGameTimeRange: number;
-        isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean;
+        isGamePositionValid: (game: FixiCourtGame, rect: Rect, courtId: number) => boolean;
+        targetRect: Rect;
+        dragResult: Rect;
         constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary);
         protected dragStart(d: FixiCourtGame): void;
+        snapY(y: number): number;
         private basedrag(d);
         protected drag(d: FixiCourtGame): void;
         protected dragEnd(d: FixiCourtGame): void;
         protected isNewHeightValidByLimit(newHeight: number): boolean;
-        private resetShadow();
-        validate(game: FixiCourtGame): boolean;
-        protected getRect(): Rect;
+        validate(game: FixiCourtGame, dragResult: Rect, courtId: number): boolean;
+        getCourtInPoint(x: any): CourtMetrix[];
     }
     interface Rect {
         left: number;
@@ -50,13 +48,26 @@ declare namespace FixiGridUI.FixiGridComponents.Behaviors {
         private newGameHeight;
         protected shadowClass: string;
         protected drag(d: FixiCourtGame): void;
-        private calculateNewHeight();
     }
 }
 declare namespace FixiGridUI.FixiGridComponents.Behaviors {
     class GameResizeTopBehavior extends BaseDragBehavior {
         protected shadowClass: string;
         protected drag(d: FixiCourtGame): void;
+    }
+}
+declare namespace FixiGridUI.FixiGridComponents.Behaviors {
+    class MouseMoveInfo {
+        startEvent: MouseEvent;
+        pageX: number;
+        pageY: number;
+        movementX: number;
+        movementY: number;
+        moveEvent: MouseEvent;
+        offsetX: number;
+        offsetY: number;
+        constructor(startEvent: MouseEvent);
+        move: (moveEvent: MouseEvent) => void;
     }
 }
 declare namespace FixiGridUI.FixiGridComponents.Elements {
@@ -85,7 +96,7 @@ declare namespace FixiGridUI.FixiGridComponents {
             x: d3.svg.Axis;
             y: d3.svg.Axis;
         };
-        dragValidation: (game: FixiCourtGame, rect: Behaviors.Rect) => boolean;
+        dragValidation: (game: FixiCourtGame, rect: Behaviors.Rect, courtId: number) => boolean;
         constructor(args: FixiGridContentArgs);
         setGameMinTimeRange(value?: number): void;
         render(courts: FixiCourtDB[][], games: FixiCourtGame[]): void;

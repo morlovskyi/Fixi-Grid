@@ -18,22 +18,17 @@ var FixiGridUI;
                     this.shadowClass = "resize-shadow";
                 }
                 GameResizeDownBehavior.prototype.drag = function (d) {
-                    this.calculateNewHeight();
-                    if (this.newGameHeight < 0)
+                    var initialXY = d3.transform(this.target.attr("transform")).translate;
+                    var initialGameHeight = parseInt(this.target.select(".game-aria").attr("height"));
+                    var height = this.snapY(initialGameHeight + this.mouseMoveInfo.offsetY);
+                    if (height < 0)
                         return;
-                    if (!this.isNewHeightValidByLimit(this.newGameHeight))
+                    if (!this.isNewHeightValidByLimit(height))
                         return;
-                    this.gameAria.attr({
-                        height: this.newGameHeight
+                    this.shadow.select(".game-aria").attr({
+                        height: height
                     });
                     this.dragged = true;
-                };
-                GameResizeDownBehavior.prototype.calculateNewHeight = function () {
-                    var point = event.pageY - this.dragStartPageY;
-                    var newDate = this.scaleY.invert(point);
-                    var axisRowValue = this.axisX.ticks()[1];
-                    newDate.setMinutes(newDate.getMinutes() - (newDate.getMinutes() % axisRowValue), 0);
-                    this.newGameHeight = this.gameAriaHeightOriginal + this.scaleY(newDate);
                 };
                 return GameResizeDownBehavior;
             }(Behaviors.BaseDragBehavior));

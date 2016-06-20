@@ -39,7 +39,6 @@ namespace Fixi_Grid.Api
                 new CourtStructure(){ Type=2, CourtId= 8, CourtName= "Sub Court 3", ParentCourtId= 10, ColSpan= 1, RowSpan= 1, Color= "#3333FF" },
                 new CourtStructure(){ Type=3, CourtId= 9, CourtName= "Football Court 1", ParentCourtId= 0, ColSpan= 5, RowSpan= 1, Color= "#A0DC7F" },
                 new CourtStructure(){ Type=3, CourtId=10, CourtName= "Football Court 1", ParentCourtId= 0, ColSpan= 3, RowSpan= 1, Color= "#A0DC7F" },
-
             };
 
             return Request.CreateResponse<List<CourtStructure>>(HttpStatusCode.OK, courts);
@@ -65,6 +64,7 @@ namespace Fixi_Grid.Api
             games.Add(new FixiGame() { Id = 1, User = "Tony", From = new DateTime(2016, 5, 5, 10, 30, 0), To = new DateTime(2016, 5, 5, 11, 30, 0), CourtId = 10, SportID = 1 });
             games.Add(new FixiGame() { Id = 2, User = "Tony", From = new DateTime(2016, 5, 5, 10, 30, 0), To = new DateTime(2016, 5, 5, 11, 30, 0), CourtId = 7, SportID = 1 });
             games.Add(new FixiGame() { Id = 3, User = "Team 18 vs Team 20", Division = "Division A", From = new DateTime(2016, 5, 5, 15, 0, 0), To = new DateTime(2016, 5, 5, 15, 30, 0), CourtId = 10, SportID = 1 });
+            games.Add(new FixiGame() { Id = 3, User = "Team 20", Division = "Division A", From = new DateTime(2016, 5, 5, 15, 0, 0), To = new DateTime(2016, 5, 5, 15, 30, 0), CourtId = 2, SportID = 1 });
 
 
             return Request.CreateResponse<List<FixiGame>>(HttpStatusCode.OK, games.Where(x => x.From.Date == businessDate.Date).ToList());

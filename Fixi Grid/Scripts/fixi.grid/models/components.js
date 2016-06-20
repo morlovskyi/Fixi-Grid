@@ -28,10 +28,10 @@ var FixiGridUI;
                         if (validateGame == contentGame)
                             return false;
                         var gameCourt = _this.content.courtDict[contentGame.courtId];
-                        //return validateCourt.position == gameCourt.position ||
-                        //    (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size)||
-                        //    (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
-                        return validateCourt.type == gameCourt.type;
+                        return validateCourt.position == gameCourt.position ||
+                            (gameCourt.position < validateCourt.position && validateCourt.position + validateCourt.size <= gameCourt.position + gameCourt.size) ||
+                            (gameCourt.position > validateCourt.position && validateCourt.position + validateCourt.size >= gameCourt.position + gameCourt.size);
+                        // validateCourt.type == gameCourt.type
                     });
                     var gamesByTimeRange = gamesByCourtPosition.filter(function (contentGame) {
                         return (from <= contentGame.from && to >= contentGame.from) ||

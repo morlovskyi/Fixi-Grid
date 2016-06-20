@@ -19,47 +19,20 @@ var FixiGridUI;
                 }
                 GameDragBehavior.prototype.drag = function (d) {
                     var id = this.shadow.attr("data-court-id");
-                    var tempX = event.pageX - this.dragStartPageX;
-                    var d3event = d3.event;
-                    var courtSize = this.courtDict()[id].size;
-                    var courtPosition = this.courtDict()[id].position;
-                    var newCourt = null;
-                    this.availableCourts.forEach(function (x, i, array) {
-                        var tempCourt;
-                        if (x.id == id) {
-                            if (d3event.x < courtSize) {
-                                tempCourt = array[i - 1];
-                            }
-                            else {
-                                tempCourt = array[i + 1];
-                            }
-                        }
-                        if (!tempCourt || tempCourt.position == courtPosition)
-                            return;
-                        newCourt = tempCourt;
-                    });
-                    var left;
-                    if (!newCourt) {
-                        left = d3.transform(this.shadow.attr("transform")).translate[0];
-                    }
-                    else {
-                        left = newCourt.position;
-                        this.shadow.attr({
-                            "data-court-id": newCourt.id
-                        });
-                        this.shadow.select(".game-aria").attr({
-                            width: newCourt.size,
-                        });
-                    }
-                    var tempY = event.pageY - this.dragStartPageY;
-                    var y = this.scaleY.invert(this.rect[1] + tempY);
-                    var axisRowValue = this.axisX.ticks()[1];
-                    y.setMinutes(y.getMinutes() - (y.getMinutes() % axisRowValue), 0);
-                    var top = this.scaleY(y);
+                    var court = this.courtDict()[id];
+                    var shadowXY = d3.transform(this.shadow.attr("transform")).translate;
+                    var initialXY = d3.transform(this.target.attr("transform")).translate;
+                    var changeCourt = this.getCourtInPoint(event.layerX - 45)[0];
+                    var left = (changeCourt) ? changeCourt.position : shadowXY[0];
+                    var width = (changeCourt) ? changeCourt.size : this.shadow.select(".game-aria").attr("width");
+                    var top = this.snapY(initialXY[1] + this.mouseMoveInfo.offsetY);
                     if (left < 0 || top < 0)
                         return;
                     this.shadow.attr({
                         transform: "translate(" + left + "," + top + ")"
+                    });
+                    this.shadow.select(".game-aria").attr({
+                        width: width
                     });
                     this.dragged = true;
                 };

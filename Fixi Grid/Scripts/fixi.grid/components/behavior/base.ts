@@ -1,25 +1,36 @@
 ﻿namespace FixiGridUI.FixiGridComponents.Behaviors {
     export class BaseDragBehavior {
         public behavior: d3.behavior.Drag<FixiCourtGame>;
+        public mouseMoveInfo: MouseMoveInfo;
         protected target: d3.Selection<FixiCourtGame>;
         protected shadow: d3.Selection<FixiCourtGame>;
-        protected rect: [number, number];
         protected animatinoDuration = 150;
-        protected dragStartPageX: number;
-        protected dragStartPageY: number;
         protected axisX: d3.svg.Axis;
         protected scaleY: d3.time.Scale<number, number>;
         protected courtDict: () => CourtMetrixDictionary;
-        protected gameAria: d3.Selection<any>;
-        protected gameAriaHeightOriginal: number;
         protected targetClass = "";
         protected shadowClass = "";
         protected dragged = false;
         protected availableCourts: CourtMetrix[] = [];
         public disabled = false;
         public minGameTimeRange = 15;
-        public isGamePositionValid: (game: FixiCourtGame, rect: Rect) => boolean = null;
-
+        public isGamePositionValid: (game: FixiCourtGame, rect: Rect, courtId: number) => boolean = null;
+        get targetRect(): Rect {
+            return {
+                left: this.snapY(d3.transform(this.target.attr("transform")).translate[0]),
+                top: this.snapY(d3.transform(this.target.attr("transform")).translate[1]),
+                width: parseFloat(this.target.select("rect.game-aria").attr("width")),
+                height: parseFloat(this.target.select("rect.game-aria").attr("height"))
+            }
+        }
+        get dragResult(): Rect {
+            return {
+                left: this.snapY(d3.transform(this.shadow.attr("transform")).translate[0]),
+                top: this.snapY(d3.transform(this.shadow.attr("transform")).translate[1]),
+                width: parseFloat(this.shadow.select("rect.game-aria").attr("width")),
+                height: parseFloat(this.shadow.select("rect.game-aria").attr("height"))
+            }
+        }
         constructor(axisX: d3.svg.Axis, scaleY: d3.time.Scale<number, number>, courtDict: () => CourtMetrixDictionary) {
             this.axisX = axisX;
             this.scaleY = scaleY;
@@ -32,19 +43,15 @@
 
         protected dragStart(d: FixiCourtGame) {
             if (this.disabled) return;
-
+            this.mouseMoveInfo = new MouseMoveInfo(<MouseEvent>event);
             this.dragged = false;
             var gElement = $(event.srcElement).parent().get(0);
             var clone = $(gElement).clone()
             this.availableCourts = [];
+
             this.target = d3.select(gElement).classed(this.targetClass, true);
             this.shadow = d3.select(clone.get(0)).classed(this.shadowClass, true);
-            this.gameAria = this.shadow.select(".game-aria");
-            this.gameAriaHeightOriginal = parseInt(this.gameAria.attr("height"));
-            this.rect = d3.transform(this.shadow.attr("transform")).translate;
             this.shadow.attr({ "data-court-id": d.courtId })
-            this.dragStartPageX = (<any>event).pageX
-            this.dragStartPageY = (<any>event).pageY;
             clone.appendTo($(gElement).parent());
 
             this.availableCourts = [];
@@ -62,12 +69,19 @@
                 return 0
             })
         }
-
+        public snapY(y: number) {
+            var startDate = new Date(this.scaleY.domain()[0].getTime());
+            var axisRowValue = this.axisX.ticks()[1];
+            startDate.setMinutes(startDate.getMinutes() + axisRowValue);
+            var width = this.scaleY(startDate);
+            return y - (y % width) + Math.round((y % width) / width) * width;
+        }
         private basedrag(d: FixiCourtGame) {
             if (this.disabled) return;
-
+            this.mouseMoveInfo.move(<MouseEvent>event);
             this.drag(d);
-            this.shadow.classed("invalid", !this.validate(d))
+            var court = this.getCourtInPoint(this.dragResult.left + 10)[0];
+            this.shadow.classed("invalid", !this.validate(d, this.dragResult, court.id))
         }
 
         protected drag(d: FixiCourtGame) {
@@ -76,59 +90,45 @@
 
         protected dragEnd(d: FixiCourtGame) {
             if (this.disabled) return;
-
-            if (this.dragged == false) {
-                this.resetShadow();
-
+            var rect = this.dragResult;
+            var court = this.getCourtInPoint(rect.left + 10)[0];
+            if (!this.dragged && rect.top == this.targetRect.top && this.targetRect.left == rect.left) {
                 $(this).trigger("edit", d)
             }
-            else {
-                if (!this.validate(d)) {
-                    return this.resetShadow();
-                };
+            else if (this.validate(d, rect, court.id)) {    
+                d.courtId = court.id;
 
-                setTimeout(() => {
-                    d.courtId = parseInt(this.shadow.attr("data-court-id"));
+                this.target.select(".game-aria").attr({
+                    width: this.courtDict()[d.courtId].size,
+                })
+                this.target.attr({
+                    transform: "translate(" + rect.left + "," + rect.top + ")",
+                    height: rect.height
+                })
 
-                    var rect = this.getRect();
-                    this.target.select(".game-aria").attr({
-                        width: this.courtDict()[d.courtId].size,
-                    })
-                    this.target.attr({
-                        transform: "translate(" + rect.left + "," + rect.top + ")",
-                        height: rect.height
-                    })
-                    this.resetShadow();
-
-                    $(this).trigger("change", [this.getRect(), this.target, d])
-                }, this.animatinoDuration)
+                $(this).trigger("change", [rect, this.target, d])
             }
+            this.target.classed(this.targetClass, false)
+            this.shadow.remove();
         }
+
         protected isNewHeightValidByLimit(newHeight: number) {
             var fromDate = this.scaleY.invert(newHeight);
             var startDate = this.scaleY.domain()[0];
             return parseInt(((fromDate.getTime() - startDate.getTime()) / 1000 / 60).toString()) >= this.minGameTimeRange;
         }
 
-        private resetShadow() {
-            this.target.classed(this.targetClass, false)
-            this.shadow.remove();
-        }
-        public validate(game: FixiCourtGame) {
+        public validate(game: FixiCourtGame, dragResult: Rect, courtId: number) {
             if (this.isGamePositionValid)
-                return this.isGamePositionValid(game, this.getRect())
+                return this.isGamePositionValid(game, dragResult, courtId)
 
             return true;
         }
-        protected getRect(): Rect {
-            var translate = d3.transform(this.shadow.attr("transform")).translate;
-            var result = <Rect>{
-                left: translate[0],
-                top: translate[1],
-                width: parseFloat(this.shadow.select("rect.game-aria").attr("width")),
-                height: parseFloat(this.shadow.select("rect.game-aria").attr("height"))
-            }
-            return result
+
+        public getCourtInPoint(x) {
+            return this.availableCourts.filter(c => {
+                return c.position <= x && x < c.position + c.size;
+            })
         }
     }
     export interface Rect {

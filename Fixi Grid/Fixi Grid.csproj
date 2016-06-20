@@ -217,6 +217,7 @@
     <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\game.resize.down.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\game.resize.top.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\game.drag.ts" />
+    <TypeScriptCompile Include="Scripts\fixi.grid\components\behavior\mouseMoveInfo.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\content.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\d3elements\game.ts" />
     <TypeScriptCompile Include="Scripts\fixi.grid\components\header.ts" />
